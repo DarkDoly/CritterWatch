@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Critter Watch</title>
+    <script defer src="/__/firebase/10.14.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-firestore-compat.js"></script>
+    <script src="auth.js" defer></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>Critter Watch</h1>
+    
+    <!-- Main Section -->
+    <section id="whenSignedOut">
+        <button id="signingoogle" class="btn btn-primary">Sign in with Google</button>
+        <button id="signinemail" class="btn btn-primary">Sign in with Email</button>
+    </section>
+
+    <!-- Sign Up Section -->
+    <section id="signUpSection" hidden>
+        <h2>Sign Up</h2>
+        <input type="username" id="signUpUsername" placeholder="John Doe" required />
+        <input type="email" id="signUpEmail" placeholder="Email" required />
+        <input type="password" id="signUpPassword" placeholder="Password" required />
+        <input type="password" id="signUpConfirmPassword" placeholder="Confirm Password" required />
+        <button id="signUpBtn" class="btn btn-primary">Sign Up</button>
+        <button id="backToSignInBtn" class="btn btn-secondary">Back to Sign In</button>
+    </section>
+
+    <!-- Sign In Section -->
+    <section id="signInSection" hidden>
+        <h2>Sign In</h2>
+        <input type="email" id="signInEmail" placeholder="Email or Username" required />
+        <input type="password" id="signInPassword" placeholder="Password" required />
+        <button id="signInBtn" class="btn btn-primary">Sign In</button>
+        <button id="signUpFromSignInBtn" class="btn btn-secondary">Sign Up</button>
+        <button id="backFromSignInBtn" class="btn btn-secondary">Back</button>
+    </section>
+
+    <!-- User Details Section -->
+    <section id="whenSignedIn" hidden>
+        <div id="userDetails"></div>
+        <button id="accountswitch" class ="btn btn-primary">Switch Accounts</button>
+        <button id="friends" class ="btn btn-primary">Friendlist</button>
+        <button id="post" class ="btn btn-primary">Create A Post</button>
+        <button id="signOutBtn" class="btn btn-primary">Sign Out</button>
+    </section>
+    
+    <section id="friendsSection" hidden>
+      <h2>Your Friends</h2>
+      <ul id="friendsList" class="list-group"></ul>
+      <button id="addFriendBtn" class="btn btn-secondary">Add Friend</button>
+      <button id="backFromFriendsSection" class="btn btn-secondary">Back</button>
+    </section>
+    
+    <!-- Account Modal -->
+    <div class="modal fade" id="accountModal" tabindex="-1" role="dialog" aria-labelledby="accountModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="accountModalLabel">Switch Accounts</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul id="accountList" class="list-group"></ul>
+                    <button id="addAccountBtn" class="btn btn-secondary mt-2">Add Existing Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
