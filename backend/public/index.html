@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <style>
         .card {
-            height: 450px;
+            height: 500px;
             display: flex;
             flex-direction: column;
         }
@@ -22,6 +22,28 @@
         .card-img-top {
             object-fit: cover;
             height: 300px;
+        }
+    </style>
+    <style>
+        .star-button {
+            background: none;
+            border: none;
+            font-size: 35px; /* Adjust size as needed */
+            cursor: pointer;
+            color: black; /* Unchecked star color */
+            transition: color 0.3s; /* Smooth transition */
+        }
+
+        .star-button.checked {
+            color: gold; /* Checked star color */
+        }
+
+        .star-button:hover {
+            color: gray; /* Hover color */
+        }
+
+        .star-button.unchecked:hover {
+            color: orange; /* Hover color for unchecked star */
         }
     </style>
 </head>

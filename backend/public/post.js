@@ -72,8 +72,9 @@ postForm.addEventListener('submit', (event) => {
                 // Save the post data to Firestore, including the image URL
                 db.collection('post').add({
                     title: title,
-                    content: content, // Description can be empty
-                    imageUrl: downloadURL, // Store the image URL
+                    content: content,
+                    imageUrl: downloadURL,
+                    likes: [], // Initialize likes array
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 })
                 .then(() => {

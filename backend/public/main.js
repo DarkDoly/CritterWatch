@@ -416,20 +416,26 @@ function getPosts() {
     postsRef.get().then(snapshot => {
         snapshot.forEach(doc => {
             const postData = doc.data();
-            console.log('Post Data:', postData); // Log post data for debugging
             const postDiv = document.createElement('div');
             postDiv.className = 'col-md-4'; // Bootstrap column class
-            
+
             // Create the post content
             postDiv.innerHTML = `
-            <div class="card mb-4">
-                <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="display: ${postData.imageUrl ? 'block' : 'none'};">
-                <div class="card-body">
-                    <h5 class="card-title">${postData.title}</h5>
-                    <p class="card-text">${postData.content || 'No description available.'}</p>
+                <div class="card mb-4">
+                    <a href="specpost.html?postId=${doc.id}">
+                        <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="max-height: 300px; object-fit: cover;">
+                    </a>
+                    <div class="card-body">
+                        <button class="star-button ${postData.likes.includes(firebase.auth().currentUser.uid) ? 'checked' : 'unchecked'}" data-post-id="${doc.id}">
+                            ★
+                        </button>
+                        <span class="likeCount">${postData.likes.length}</span>
+                        <h5 class="card-title">${postData.title}</h5>
+                        <p class="card-text">${postData.content}</p>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+
             postsContainer.appendChild(postDiv);
         });
     }).catch(error => {
@@ -437,6 +443,43 @@ function getPosts() {
     });
 }
 
+// Event delegation for star button clicks
+document.addEventListener('click', (event) => {
+    if (event.target.classList.contains('star-button')) {
+        const postId = event.target.getAttribute('data-post-id');
+        const userId = firebase.auth().currentUser.uid; // Get the current user ID
+        const postRef = db.collection('post').doc(postId);
+
+        postRef.get().then((doc) => {
+            if (doc.exists) {
+                const postData = doc.data();
+                let likes = postData.likes || [];
+                const likeCountElement = event.target.nextElementSibling; // Get the like count span
+
+                if (likes.includes(userId)) {
+                    // User has already liked this post, so remove the like
+                    likes = likes.filter(id => id !== userId);
+                    event.target.classList.remove('checked'); // Remove checked class
+                    event.target.classList.add('unchecked'); // Add unchecked class
+                } else {
+                    // User has not liked this post, so add the like
+                    likes.push(userId);
+                    event.target.classList.add('checked'); // Add checked class
+                    event.target.classList.remove('unchecked'); // Remove unchecked class
+                }
+
+                // Update the likes array in Firestore
+                postRef.update({ likes })
+                    .then(() => {
+                        likeCountElement.textContent = likes.length; // Update like count
+                    })
+                    .catch(error => {
+                        console.error("Error updating likes: ", error);
+                    });
+            }
+        });
+    }
+});
 
 auth.onAuthStateChanged(user => {
     if (user) {
