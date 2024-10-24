@@ -226,17 +226,6 @@ function showUserDetails(user) {
     whenSignedIn.hidden = false;
 }
 
-// Auth state change listener
-auth.onAuthStateChanged(user => {
-    if (user) {
-        showUserDetails(user);
-    } else {
-        // No user is signed in
-        whenSignedIn.hidden = true;
-        whenSignedOut.hidden = false; // Show main sign-in section
-    }
-}); 
-
 backFromFriendsSection.onclick = () => {
     clearInputFields();  // Clear fields before showing sign-up
     friendsSection.hidden = true;
@@ -373,17 +362,29 @@ function displayFriends(friends) {
 function removeFriend(friendId) {
     const user = firebase.auth().currentUser;
     if (user) {
-        // Update the user's document to remove the friend ID
-        db.collection('user').doc(user.uid).update({
-            friends_ID: firebase.firestore.FieldValue.arrayRemove(friendId)
-        })
-        .then(() => {
-            console.log("Friend removed:", friendId);
-            getFriends(); // Refresh the friends list
-        })
-        .catch(error => {
-            console.error("Error removing friend:", error);
-            alert(error.message);
+        // Get the friend's document to retrieve their username
+        db.collection('user').doc(friendId).get().then(doc => {
+            if (doc.exists) {
+                const friendName = doc.data().UserName; // Get the friend's username
+                
+                // Update the user's document to remove the friend ID and name
+                db.collection('user').doc(user.uid).update({
+                    friends_ID: firebase.firestore.FieldValue.arrayRemove(friendId),
+                    friends_Names: firebase.firestore.FieldValue.arrayRemove(friendName)
+                })
+                .then(() => {
+                    console.log("Friend removed:", friendId);
+                    getFriends(); // Refresh the friends list
+                })
+                .catch(error => {
+                    console.error("Error removing friend:", error);
+                    alert(error.message);
+                });
+            } else {
+                console.error("Friend document not found:", friendId);
+            }
+        }).catch(error => {
+            console.error("Error fetching friend document:", error);
         });
     } else {
         alert("No user signed in.");
@@ -400,15 +401,51 @@ document.getElementById('addFriendBtn').onclick = () => {
     }
 };
 
-// Auth state change listener
-auth.onAuthStateChanged(user => {
-    if (user) {
-        getFriends(); // Get friends if signed in
-    }
-});
-
 document.getElementById('friends').onclick = () => {
     document.getElementById('whenSignedIn').hidden = true; // Hide signed-in section
     document.getElementById('friendsSection').hidden = false; // Show friends section
     getFriends(); // Fetch friends when entering this section
 };
+
+// Function to get and display posts
+function getPosts() {
+    const postsContainer = document.getElementById('postsContainer');
+    postsContainer.innerHTML = ''; // Clear previous posts
+
+    const postsRef = db.collection('post');
+    postsRef.get().then(snapshot => {
+        snapshot.forEach(doc => {
+            const postData = doc.data();
+            console.log('Post Data:', postData); // Log post data for debugging
+            const postDiv = document.createElement('div');
+            postDiv.className = 'col-md-4'; // Bootstrap column class
+            
+            // Create the post content
+            postDiv.innerHTML = `
+            <div class="card mb-4">
+                <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="display: ${postData.imageUrl ? 'block' : 'none'};">
+                <div class="card-body">
+                    <h5 class="card-title">${postData.title}</h5>
+                    <p class="card-text">${postData.content || 'No description available.'}</p>
+                </div>
+            </div>
+        `;
+            postsContainer.appendChild(postDiv);
+        });
+    }).catch(error => {
+        console.error("Error fetching posts: ", error);
+    });
+}
+
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        showUserDetails(user);
+        getPosts(); // Fetch and display posts if signed in
+        whenSignedIn.hidden = false;
+        whenSignedOut.hidden = true; // Hide sign-in section
+    } else {
+        whenSignedIn.hidden = true;
+        whenSignedOut.hidden = false; // Show main sign-in section
+    }
+});

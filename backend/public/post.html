@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post</title>
+    <script defer src="/__/firebase/10.14.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-storage-compat.js"></script>
+    <script src="post.js" defer></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Create a Post</h1>
+        <form id="postForm">
+            <div class="form-group">
+                <label for="postTitle">Title:</label>
+                <input type="text" id="postTitle" class="form-control" required>
+            </div>
+            <img id="imagePreview" src="" alt="Image Preview" style="display: none; width: 100%; margin-top: 10px;">
+            <div class="form-group">
+                <label for="postContent">Content (Optional):</label>
+                <textarea id="postContent" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="postImage">Select Image:</label>
+                <input type="file" id="postImage" class="form-control" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Post</button>
+        </form>
+        <div id="message" class="mt-3"></div>
+        
+        <!-- Go Back Button -->
+        <button id="goBackBtn" class="btn btn-secondary mt-2" onclick="window.location.href='index.html'">Go Back to Main Page</button>
+    </div>
+</body>
+</html>
