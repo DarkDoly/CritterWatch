@@ -1,15 +1,12 @@
 import { Route, Routes } from "react-router-dom"
 import Home from "./pages/Home"
+import ForumBox from "./components/nav/ForumPreview"
 
-function App() {
+export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={
-        <Home />
-      } 
-    />
-    </Routes>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/forum" element={<ForumBox />} />
+      </Routes>
   )
 }
-
-export default App

@@ -1,10 +1,10 @@
 import NavBar from "../components/nav/NavBar";
 
-function Home() {
+const Home = () => {
     return <>
         <NavBar />
         <div className="container">
-            <p>Lots of animal posts</p>
+            <p>Lots of animal posts huh</p>
         </div>
     </>
 }
