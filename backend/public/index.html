@@ -25,6 +25,10 @@
         }
     </style>
     <style>
+        .like-container {
+            display: flex;
+            align-items: center; /* Center items vertically */
+        }
         .star-button {
             background: none;
             border: none;
@@ -45,6 +49,19 @@
         .star-button.unchecked:hover {
             color: orange; /* Hover color for unchecked star */
         }
+    </style>
+    <style>
+    .minusBtn {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
+        display: none; /* Start as hidden */
+    }
+
+    .minusBtn.visible {
+        display: inline-block; /* Show when visible class is added */
+    }
     </style>
 </head>
 <body>
@@ -87,6 +104,18 @@
     
         <!-- Posts Section -->
         <h2>Newest Posts</h2>
+        <div class="form-group">
+            <label for="sortOptions">Sort By:</label>
+            <select id="sortOptions" class="form-control">
+                <option value="likes-asc">Likes (Least to Most)</option>
+                <option value="likes-desc">Likes (Most to Least)</option>
+                <option value="date-asc">Date (Oldest to Newest)</option>
+                <option value="date-desc">Date (Newest to Oldest)</option>
+            </select>
+            <button id="myPost" class="btn btn-primary mt-2">My Post</button>
+            <button id="removePost" class="btn btn-primary mt-2"hidden>Remove Your Posts</button>
+            <button id="backToAllPostsBtn" class="btn btn-primary mt-2" hidden>Back to All Posts</button>
+        </div>
         <div class="container">
             <div class="row" id="postsContainer"></div>
         </div>

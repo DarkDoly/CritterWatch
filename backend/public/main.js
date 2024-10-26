@@ -1,3 +1,4 @@
+//AUTH RELATED
 const auth = firebase.auth();
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -232,7 +233,17 @@ backFromFriendsSection.onclick = () => {
     whenSignedIn.hidden = false;
 };
 
+
+
+
+
+
 // ------------------------------------------------------------
+// FRIENDS RELATED
+
+
+
+
 
 // Function to add a friend
 function addFriend(friendEmail) {
@@ -407,37 +418,27 @@ document.getElementById('friends').onclick = () => {
     getFriends(); // Fetch friends when entering this section
 };
 
-// Function to get and display posts
-function getPosts() {
-    const postsContainer = document.getElementById('postsContainer');
-    postsContainer.innerHTML = ''; // Clear previous posts
 
+
+
+
+//--------------------------------------------------------------------------------------------
+// POST RELATED
+
+
+
+
+
+
+function getPosts() {
     const postsRef = db.collection('post');
     postsRef.get().then(snapshot => {
+        currentPosts = []; // Clear previous posts
         snapshot.forEach(doc => {
-            const postData = doc.data();
-            const postDiv = document.createElement('div');
-            postDiv.className = 'col-md-4'; // Bootstrap column class
-
-            // Create the post content
-            postDiv.innerHTML = `
-                <div class="card mb-4">
-                    <a href="specpost.html?postId=${doc.id}">
-                        <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="max-height: 300px; object-fit: cover;">
-                    </a>
-                    <div class="card-body">
-                        <button class="star-button ${postData.likes.includes(firebase.auth().currentUser.uid) ? 'checked' : 'unchecked'}" data-post-id="${doc.id}">
-                            ★
-                        </button>
-                        <span class="likeCount">${postData.likes.length}</span>
-                        <h5 class="card-title">${postData.title}</h5>
-                        <p class="card-text">${postData.content}</p>
-                    </div>
-                </div>
-            `;
-
-            postsContainer.appendChild(postDiv);
+            const postData = { id: doc.id, ...doc.data() }; // Include doc ID
+            currentPosts.push(postData); // Store each post in currentPosts
         });
+        displaySortedPosts(); // Display posts initially
     }).catch(error => {
         console.error("Error fetching posts: ", error);
     });
@@ -480,6 +481,137 @@ document.addEventListener('click', (event) => {
         });
     }
 });
+
+// Function to display a single post
+function displayPost(postData) {
+    const postsContainer = document.getElementById('postsContainer');
+    const postDiv = document.createElement('div');
+    postDiv.className = 'col-md-4'; // Bootstrap column class
+
+    // Create the post content
+    postDiv.innerHTML = `
+        <div class="card mb-4" style="position: relative;"> <!-- Set position relative -->
+            <a href="specpost.html?postId=${postData.id}">
+                <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="max-height: 300px; object-fit: cover;">
+            </a>
+            <div class="card-body">
+                <div class="like-container" style="display: flex; align-items: center;">
+                    <button class="star-button ${postData.likes && postData.likes.includes(firebase.auth().currentUser.uid) ? 'checked' : 'unchecked'}" data-post-id="${postData.id}">
+                        ★
+                    </button>
+                    <span class="likeCount">${postData.likes ? postData.likes.length : 0}</span>
+                </div>
+                <h5 class="card-title">${postData.title}</h5>
+                <p class="card-text">${postData.content}</p>
+            </div>
+            <!-- Minus button -->
+            <button class="minusBtn btn btn-danger" style="position: absolute; top: 10px; left: 10px; z-index: 10;">-</button>
+        </div>
+    `;
+
+    postsContainer.appendChild(postDiv);
+    return postsContainer;
+}
+
+function showMyPosts() {
+    const userId = firebase.auth().currentUser.uid; // Get the current user ID
+    const myPosts = currentPosts.filter(post => post.userId === userId); // Filter posts
+    const postsContainer = document.getElementById('postsContainer');
+
+    postsContainer.innerHTML = ''; // Clear previous posts
+    document.getElementById('backToAllPostsBtn').hidden = false; // Show back button
+    document.getElementById('removePost').hidden = false; // Show remove post button
+    document.getElementById('myPost').hidden = true; // Hide the "My Posts" button
+
+    // Reset visibility of minus buttons
+    const minusButtons = document.querySelectorAll('.minusBtn');
+    minusButtons.forEach(btn => {
+        btn.classList.remove('visible'); // Ensure they are hidden when entering this view
+    });
+
+    if (myPosts.length === 0) {
+        postsContainer.innerHTML = '<p>No posts found.</p>'; // Show message if no posts
+        document.getElementById('removePost').hidden = true; // Hide remove post button
+        return; // Exit the function if no posts
+    }
+
+    // Display user posts
+    myPosts.forEach(postData => {
+        displayPost(postData); // Display each post
+    
+        // Get the minus button after appending the post
+        const minusButton = postsContainer.lastChild.querySelector('.minusBtn'); 
+    
+        // Add event listener for the minus button
+        minusButton.addEventListener('click', () => {
+            const confirmed = confirm('Are you sure you want to delete this post?');
+            if (confirmed) {
+                deletePost(postData.id); // Call delete function
+            }
+        });
+    });
+}
+
+// Event listener to toggle visibility of minus buttons
+document.getElementById('removePost').addEventListener('click', () => {
+    const minusButtons = document.querySelectorAll('.minusBtn');
+    minusButtons.forEach(btn => {
+        // Toggle a class instead of changing display directly
+        btn.classList.toggle('visible'); 
+    });
+});
+
+document.getElementById('backToAllPostsBtn').addEventListener('click', () => {
+    backToAllPostsBtn.hidden = true;
+    document.getElementById('removePost').hidden = true; // Hide remove post button
+    document.getElementById('myPost').hidden = false; // Show "My Posts" button
+    getPosts(); // Fetch and display all posts again
+});
+
+// Delete post function
+function deletePost(postId) {
+    // Filter out the post from currentPosts immediately
+    currentPosts = currentPosts.filter(post => post.id !== postId);
+    // Proceed to delete the post from Firestore
+    db.collection('post').doc(postId).delete()
+        .then(() => {
+            console.log("Post successfully deleted!");
+            showMyPosts(); // Refresh to reflect changes in "My Posts"
+        })
+        .catch((error) => {
+            console.error("Error removing post: ", error);
+            // Optionally handle the error, e.g., revert UI state
+        });
+}
+// Existing code for My Posts button
+document.getElementById('myPost').addEventListener('click', showMyPosts);
+
+// Sort posts by likes or creation date
+function sortPosts(criteria, order) {
+    if (criteria === 'likes') {
+        currentPosts.sort((a, b) => (order === 'asc' ? a.likes.length - b.likes.length : b.likes.length - a.likes.length));
+    } else if (criteria === 'date') {
+        currentPosts.sort((a, b) => (order === 'asc' ? a.createdAt.seconds - b.createdAt.seconds : b.createdAt.seconds - a.createdAt.seconds));
+    }
+    displaySortedPosts();
+}
+
+// Display sorted posts
+function displaySortedPosts() {
+    const postsContainer = document.getElementById('postsContainer');
+    postsContainer.innerHTML = ''; // Clear previous posts
+    currentPosts.forEach(postData => {
+        displayPost(postData); // Re-display posts in sorted order
+    });
+}
+
+// Event listener for sort options
+document.getElementById('sortOptions').addEventListener('change', (event) => {
+    const [criteria, order] = event.target.value.split('-');
+    sortPosts(criteria, order);
+});
+
+let currentPosts = []; // Global array to hold all posts
 
 auth.onAuthStateChanged(user => {
     if (user) {
