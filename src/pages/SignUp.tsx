@@ -1,0 +1,1 @@
+// This page is where users will be able to sign up with an email and a username, as well as a password which should be at least 6 characters
