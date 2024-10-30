@@ -1,10 +1,11 @@
 import NavBar from "../components/nav/NavBar";
+import PostGrid from "../components/post/PostGrid";
 
 function Home() {
     return <>
         <NavBar />
         <div className="container">
-            <p>Lots of animal posts</p>
+            <PostGrid></PostGrid>
         </div>
     </>
 }
