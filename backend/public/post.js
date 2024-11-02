@@ -1,4 +1,3 @@
-// Make sure to remove the firebaseConfig declaration if it's already in main.js
 // Initialize Firebase if not already initialized
 if (!firebase.apps.length) {
     const firebaseConfig = {
@@ -83,7 +82,8 @@ postForm.addEventListener('submit', (event) => {
                     imageUrl: downloadURL,
                     likes: [], // Initialize likes array
                     userId: firebase.auth().currentUser.uid, // Store user ID
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    comments: [] // Initialize empty comments array (if desired for easier retrieval)
                 });
             })
             .then(() => {

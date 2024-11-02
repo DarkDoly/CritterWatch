@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Specific Post</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script defer src="/__/firebase/10.14.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-firestore-compat.js"></script>
+    <script src="specpost.js" defer></script>
     <style>
         body {
             display: flex;
@@ -24,6 +29,54 @@
             height: auto;
             object-fit: cover;
         }
+        .comment {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .comments-list-container {
+            max-height: 300px; /* Set a height limit for the comments section */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border: 1px solid #ccc; /* Optional: to define boundaries */
+            padding: 10px; /* Optional: padding */
+            margin-top: 10px; /* Space between form and comments */
+        }   
+    </style>
+    <style>
+        .comment {
+            display: flex; /* Use flexbox to align items */
+            flex-direction: column; /* Arrange items vertically */
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            align-items: flex-start; /* Align items to the left */
+        }
+        .like-container {
+            display: flex;
+            align-items: center; /* Center items vertically */
+        }
+        .star-button {
+            background: none;
+            border: none;
+            font-size: 10px; /* Adjust size as needed */
+            cursor: pointer;
+            color: black; /* Unchecked star color */
+            transition: color 0.3s; /* Smooth transition */
+        }
+
+        .star-button.checked {
+            color: gold; /* Checked star color */
+        }
+
+        .star-button:hover {
+            color: gray; /* Hover color */
+        }
+
+        .star-button.unchecked:hover {
+            color: orange; /* Hover color for unchecked star */
+        }
     </style>
 </head>
 <body>
@@ -31,14 +84,21 @@
         <img id="postImage" class="post-image" alt="Post Image">
         <h2 id="postTitle"></h2>
         <p id="postContent"></p>
-        <a href="index.html" class="btn btn-primary">Back to Home</a>
+        <button id="commentButton" class="btn btn-primary">Add Comment</button>
+        <div id="commentsSection" hidden>
+            <form id="commentForm">
+                <div class="form-group">
+                    <textarea id="commentInput" class="form-control" rows="3" placeholder="Add a comment..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="file" id="commentImage" class="form-control-file" accept="image/*">
+                </div>
+                <button type="submit" id="submitButton" class="btn btn-primary">Submit Comment</button>
+                <button type="button" id="backButton" class="btn btn-light">Back</button>
+            </form>
+        </div>
+        <a href="index.html" class="btn btn-secondary">Back to Home</a>
+        <div id="commentsList" class="comments-list-container"></div>
     </div>
-
-    <script defer src="/__/firebase/10.14.0/firebase-app-compat.js"></script>
-    <script defer src="/__/firebase/10.14.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-    <script defer src="/__/firebase/10.14.0/firebase-firestore-compat.js"></script>
-    <script src="specpost.js" defer></script>
 </body>
 </html>
-

@@ -1,0 +1,21 @@
+{
+    "postId": "post123",
+    "comments": {
+        "commentId1": {
+            "content": "This is a comment",
+            "userId": "user123",
+            "imageUrl": "https://example.com/comment_image.jpg",
+            "likes": ["user456", "user789"],
+            "createdAt": "2024-10-28T12:00:00Z",
+            "replies": {
+                "replyId1": {
+                    "content": "This is a reply",
+                    "userId": "user456",
+                    "imageUrl": "https://example.com/reply_image.jpg",
+                    "likes": ["user123"],
+                    "createdAt": "2024-10-28T12:05:00Z"
+                }
+            }
+        }
+    }
+}

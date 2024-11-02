@@ -517,8 +517,8 @@ function showMyPosts() {
     const userId = firebase.auth().currentUser.uid; // Get the current user ID
     const myPosts = currentPosts.filter(post => post.userId === userId); // Filter posts
     const postsContainer = document.getElementById('postsContainer');
-
     postsContainer.innerHTML = ''; // Clear previous posts
+    
     document.getElementById('backToAllPostsBtn').hidden = false; // Show back button
     document.getElementById('removePost').hidden = false; // Show remove post button
     document.getElementById('myPost').hidden = true; // Hide the "My Posts" button
