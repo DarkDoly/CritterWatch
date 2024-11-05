@@ -1,7 +1,9 @@
 import { Route, Routes } from "react-router-dom"
 import Home from "./pages/Home"
 import ForumBox from "./components/nav/ForumPreview"
-import ForgotPassword from "./pages/ForgotPassword"
+import ForgotPasswordPartA from "./pages/ForgotPasswordPartA"
+import ForgotPasswordPartB from "./pages/ForgotPasswordPartB"
+import Profile from "./pages/Profile"
 
 
 export default function App() {
@@ -9,7 +11,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/forum" element={<ForumBox />} />
-        <Route path="/forgotPasswordTemp" element={<ForgotPassword />} />
+        <Route path="/forgotPasswordTempA" element={<ForgotPasswordPartA />} />
+        <Route path="/forgotPasswordTempB" element={<ForgotPasswordPartB />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
   )
 }

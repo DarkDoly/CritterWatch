@@ -1,9 +1,9 @@
-// Users will be taken here according to their userID,
-// they will get a single opportunity to change their password, as well as verify that password by re-typing it.
+//this page will prompt the user to input their email to send the change password prompt to their email
 
 import NavBar from "../components/nav/NavBar"
 
-const ForgotPassword = () => {
+
+const ForgotPasswordPartA = () => {
     return<>
         <NavBar />
             <div>
@@ -21,4 +21,4 @@ const ForgotPassword = () => {
     </>
 }
 
-export default ForgotPassword;
+export default ForgotPasswordPartA;

@@ -7,7 +7,9 @@ function NavBar() {
         <div className='container'>
             <Link to={'/'} className='navbar-brand'>Critter Watch</Link>
             <Link to={'/forum'} className='navbar-brand'>Hello</Link>
-            <Link to={'/forgotPasswordTemp'} className='navbar-brand'>forgotPasswordTemp</Link>
+            <Link to={'/profile'} className='navbar-brand'>Profile</Link>
+            <Link to={'/forgotPasswordTempA'} className='navbar-brand'>forgotPasswordTempA</Link>
+            <Link to={'/forgotPasswordTempB'} className='navbar-brand'>forgotPasswordTempB</Link>
         </div>
     </nav>
 }
