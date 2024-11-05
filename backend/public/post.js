@@ -75,13 +75,21 @@ postForm.addEventListener('submit', (event) => {
         () => {
             // Handle successful uploads on complete
             uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                // Save the post data to Firestore, including the image URL
+                const user = firebase.auth().currentUser;
+                
+                if (!user) {
+                    alert("You must be logged in to create a post.");
+                    createPostButton.disabled = false;
+                    return;
+                }
+
+                // Save the post data to Firestore, including the image URL and user ID
                 return db.collection('post').add({
                     title: title,
                     content: content,
                     imageUrl: downloadURL,
                     likes: [], // Initialize likes array
-                    userId: firebase.auth().currentUser.uid, // Store user ID
+                    userId: user.uid, // Store user ID
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     comments: [] // Initialize empty comments array (if desired for easier retrieval)
                 });

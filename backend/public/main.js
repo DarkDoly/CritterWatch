@@ -24,6 +24,11 @@ const signUpConfirmPasswordInput = document.getElementById('signUpConfirmPasswor
 const signInEmailInput = document.getElementById('signInEmail');
 const signInPasswordInput = document.getElementById('signInPassword');
 
+const forgetPassword = document.getElementById('forgetPassword');
+const forgetPasswordSection = document.getElementById('forgetPasswordSection')
+const forgetPasswordEmail = document.getElementById('forgetPasswordEmail')
+const forgetPasswordConfirm = document.getElementById('forgetPasswordConfirm')
+
 const userDetails = document.getElementById('userDetails');
 
 
@@ -34,6 +39,7 @@ function clearInputFields() {
     signUpConfirmPasswordInput.value = '';
     signInEmailInput.value = '';
     signInPasswordInput.value = '';
+    forgetPasswordEmail.value = '';
 }
 
 // Show sign up section
@@ -73,6 +79,15 @@ signUpBtn.onclick = () => {
         return;
     }
 
+// Check if the username is already taken
+db.collection('user').where("UserName", "==", username).get()
+.then(querySnapshot => {
+    if (!querySnapshot.empty) {
+        alert("Username is already taken. Please choose another one.");
+        return;
+    }
+
+    // Proceed with sign-up if the username is unique
     auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
             console.log("Signed up:", userCredential.user);
@@ -98,8 +113,12 @@ signUpBtn.onclick = () => {
             console.error("Error signing up:", error);
             alert(error.message);
         });
+    })
+    .catch(error => {
+        console.error("Error checking username uniqueness:", error);
+        alert("Failed to check username uniqueness. Please try again.");
+    });
 };
-
 
 //Sign in event handler
 signInBtn.onclick = () => {
@@ -143,61 +162,52 @@ signInBtn.onclick = () => {
     });
 };
 
+forgetPassword.onclick = () => {
+    clearInputFields();
+    signInSection.hidden = true;
+    forgetPasswordSection.hidden = false;
+}
+
+forgetPasswordConfirm.onclick = () => {
+    const email = document.getElementById('forgetPasswordEmail').value.trim();
+
+    if (email) {
+        // Check if the email exists in the Firestore 'user' collection
+        db.collection('user')
+            .where("UserEmail", "==", email)
+            .get()
+            .then(snapshot => {
+                if (!snapshot.empty) {
+                    // If email is found, send the password reset email
+                    firebase.auth().sendPasswordResetEmail(email)
+                        .then(() => {
+                            alert("Password reset email sent! Check your inbox.");
+                            
+                        })
+                        .catch(error => {
+                            console.error("Error sending password reset email:", error);
+                            alert("Failed to send password reset email. Please check the email and try again.");
+                        });
+                } else {
+                    // If email is not found in the Firestore collection
+                    alert("This email is not registered with us.");
+                }
+            })
+            .catch(error => {
+                console.error("Error checking email in Firestore:", error);
+                alert("An error occurred. Please try again later.");
+            });
+    } else {
+        alert("Please enter your email address.");
+    }
+};
+
 // Show sign in section when clicking "Sign in with Email"
 document.getElementById('signinemail').onclick = () => {
     clearInputFields();  // Clear fields before showing sign-in
     whenSignedOut.hidden = true; // Hide main sign-out section
     signInSection.hidden = false; // Show sign-in section
 };
-
-// Sign in with Google
-document.getElementById('signingoogle').onclick = () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .then(userCredential => {
-            console.log("Signed in with Google:", userCredential.user);
-
-            // Get the user's Google profile information
-            const user = userCredential.user;
-            const username = user.displayName || "User"; // Use Google nickname or default to "User"
-            const email = user.email;
-
-            // Reference to the user document
-            const userDocRef = db.collection('user').doc(user.uid);
-
-            // Check if the user document already exists
-            userDocRef.get().then(doc => {
-                if (doc.exists) {
-                    console.log("User document already exists:", doc.data());
-                    // You can update UI or perform other actions here
-                } else {
-                    // User document does not exist, create it
-                    console.log("Creating new user document for:", user.uid);
-                    return userDocRef.set({
-                        UserID: user.uid,
-                        UserName: username, // Save the Google nickname as username
-                        UserEmail: email,   // Save the user email
-                        friends_ID: [],      // Initialize with an empty array of tuples
-                        friends_Names: []
-                    });
-                }
-            })
-            .then(() => {
-                console.log("User document created successfully.");
-                showUserDetails(user); // Update UI with user details
-            })
-            .catch(error => {
-                console.error("Error accessing user document:", error);
-                alert(error.message);
-            });
-        })
-        .catch(error => {
-            console.error("Error signing in with Google:", error);
-            alert(error.message);
-        });
-};
-
-
 
 // Sign Out event handler
 signOutBtn.onclick = () => {
@@ -488,26 +498,32 @@ function displayPost(postData) {
     const postDiv = document.createElement('div');
     postDiv.className = 'col-md-4'; // Bootstrap column class
 
-    // Create the post content
-    postDiv.innerHTML = `
-        <div class="card mb-4" style="position: relative;"> <!-- Set position relative -->
-            <a href="specpost.html?postId=${postData.id}">
-                <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="max-height: 300px; object-fit: cover;">
-            </a>
-            <div class="card-body">
-                <div class="like-container" style="display: flex; align-items: center;">
-                    <button class="star-button ${postData.likes && postData.likes.includes(firebase.auth().currentUser.uid) ? 'checked' : 'unchecked'}" data-post-id="${postData.id}">
-                        ★
-                    </button>
-                    <span class="likeCount">${postData.likes ? postData.likes.length : 0}</span>
+    db.collection('user').doc(postData.userId).get().then((userDoc) => {
+        const username = userDoc.exists ? userDoc.data().UserName : "Unknown User"; // Fallback if no user data found
+
+        postDiv.innerHTML = `
+            <div class="card mb-4" style="position: relative;"> <!-- Set position relative -->
+                <a href="specpost.html?postId=${postData.id}">
+                    <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="max-height: 300px; object-fit: cover;">
+                </a>
+                <div class="card-body">
+                    <div class="like-container" style="display: flex; align-items: center;">
+                        <button class="star-button ${postData.likes && postData.likes.includes(firebase.auth().currentUser.uid) ? 'checked' : 'unchecked'}" data-post-id="${postData.id}">
+                            ★
+                        </button>
+                        <span class="likeCount">${postData.likes ? postData.likes.length : 0}</span>
+                    </div>
+                    <h5 class="card-title">${postData.title}</h5>
+                    <p class="card-text">${postData.content}</p>
+                    <p class="card-text"><small class="text-muted">Posted by: 
+                        <a href="profile_other.html?userId=${postData.userId}">${username}</a>
+                    </small></p>
                 </div>
-                <h5 class="card-title">${postData.title}</h5>
-                <p class="card-text">${postData.content}</p>
+                <!-- Minus button -->
+                <button class="minusBtn btn btn-danger" style="position: absolute; top: 10px; left: 10px; z-index: 10;">-</button>
             </div>
-            <!-- Minus button -->
-            <button class="minusBtn btn btn-danger" style="position: absolute; top: 10px; left: 10px; z-index: 10;">-</button>
-        </div>
-    `;
+        `;
+    });
 
     postsContainer.appendChild(postDiv);
     return postsContainer;

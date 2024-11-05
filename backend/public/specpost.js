@@ -98,64 +98,211 @@ function fetchComments() {
 function addCommentToList(commentId, commentData) {
     const commentsList = document.getElementById("commentsList");
 
-    // Create a comment element and append it to the comments list
     const commentElement = document.createElement("div");
     commentElement.classList.add("comment");
 
-    // Check if createdAt exists and is a valid Firestore Timestamp
     let createdAt;
     if (commentData.createdAt && commentData.createdAt.seconds) {
-        createdAt = commentData.createdAt.seconds * 1000; // Convert seconds to milliseconds
+        createdAt = commentData.createdAt.seconds * 1000;
     } else {
-        createdAt = Date.now(); // Use current time if createdAt is not valid
+        createdAt = Date.now();
     }
 
     commentElement.innerHTML = `
-        <small>Posted by: ${commentData.username} on ${new Date(createdAt).toLocaleString()}</small>
+        <small>Posted by: <a href="profile_other.html?userId=${commentData.userId}">${commentData.username}</a> on ${new Date(createdAt).toLocaleString()}</small>
         <p>${commentData.content}</p>
+        ${commentData.imageUrl ? `<img src="${commentData.imageUrl}" alt="Comment Image" style="max-width: 100%; height: auto;">` : ''}
         <div class="like-container">
             <button class="star-button ${commentData.likes && commentId && commentData.likes.includes(firebase.auth().currentUser?.uid) ? 'checked' : 'unchecked'}" data-comment-id="${commentId}" ${!firebase.auth().currentUser ? 'disabled' : ''}>
                 ★
             </button>
             <span class="likeCount">${commentData.likes ? commentData.likes.length : 0}</span>
         </div>
+        <button class="btn btn-secondary replyButton" data-comment-id="${commentId}">Reply</button>
+        <div class="replies" id="replies-${commentId}"></div>
     `;
 
     commentsList.appendChild(commentElement);
+    
+    fetchReplies(commentId);
+    
+    commentElement.querySelector(".replyButton").addEventListener("click", () => {
+        showReplyForm(commentId, commentElement.querySelector(`#replies-${commentId}`));
+    });
 }
 
-// Event delegation for star button clicks in comments
+function showReplyForm(commentId, repliesContainer) {
+    const replyForm = document.createElement("form");
+    replyForm.classList.add("replyForm");
+    replyForm.innerHTML = `
+        <div class="form-group">
+            <textarea class="form-control" rows="2" placeholder="Add a reply..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Reply</button>
+        <button type="button" class="btn btn-light cancelReplyButton">Cancel</button>
+    `;
+
+    // Append reply form to replies container
+    repliesContainer.appendChild(replyForm);
+
+    // Handle reply submission
+    replyForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const replyText = replyForm.querySelector("textarea").value.trim();
+        if (replyText) {
+            submitReply(commentId, replyText);
+            repliesContainer.removeChild(replyForm); // Remove the reply form after submission
+        }
+    });
+
+    // Cancel reply
+    replyForm.querySelector(".cancelReplyButton").addEventListener("click", () => {
+        repliesContainer.removeChild(replyForm); // Remove the reply form
+    });
+}
+
+function fetchReplies(commentId) {
+    const repliesContainer = document.getElementById(`replies-${commentId}`);
+    
+    // Clear previous replies
+    repliesContainer.innerHTML = "";
+
+    // Fetch replies from Firestore
+    db.collection('post').doc(postId).collection('comments').doc(commentId).collection('replies').get()
+    .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            const replyData = { ...doc.data(), replyId: doc.id }; // Ensure replyId is included
+            addReplyToList(replyData, repliesContainer, commentId);
+        });
+    })
+    .catch(error => {
+        console.error("Error fetching replies: ", error);
+    });
+}
+
+function addReplyToList(replyData, repliesContainer, commentId) {
+    const replyElement = document.createElement("div");
+    replyElement.classList.add("comment");
+
+    let createdAt;
+    if (replyData.createdAt && replyData.createdAt.seconds) {
+        createdAt = replyData.createdAt.seconds * 1000;
+    } else {
+        createdAt = Date.now();
+    }
+
+    replyElement.innerHTML = `
+        <small>Posted by: <a href="profile_other.html?userId=${replyData.userId}">${replyData.username}</a> on ${new Date(createdAt).toLocaleString()}</small>
+        <p>${replyData.content}</p>
+        <div class="like-container">
+            <button class="star-button ${replyData.likes && replyData.likes.includes(firebase.auth().currentUser?.uid) ? 'checked' : 'unchecked'}" 
+                    data-reply-id="${replyData.replyId || ''}" 
+                    data-comment-id="${commentId}" 
+                    ${!firebase.auth().currentUser ? 'disabled' : ''}>
+                ★
+            </button>
+            <span class="likeCount">${replyData.likes ? replyData.likes.length : 0}</span>
+        </div>
+    `;
+
+    repliesContainer.appendChild(replyElement);
+}
+
+function submitReply(commentId, replyText) {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user signed in!");
+        return; // Prevent submission if no user is signed in
+    }
+
+    const userId = user.uid; // Get user ID
+    const userDocRef = db.collection("user").doc(userId);
+
+    userDocRef.get().then(doc => {
+        if (doc.exists) {
+            const username = doc.data().UserName; // Get username
+
+            // Add reply to Firestore
+            db.collection("post").doc(postId).collection("comments").doc(commentId).collection("replies").add({
+                content: replyText,
+                userId: userId,
+                username: username,
+                likes: [], // Initialize likes array
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                console.log("Reply added successfully!");
+                fetchReplies(commentId); // Refresh replies
+            }).catch(error => {
+                console.error("Error adding reply: ", error);
+            });
+        } else {
+            console.error("User document not found!");
+        }
+    }).catch(error => {
+        console.error("Error fetching user document: ", error);
+    });
+}
+
 document.getElementById('commentsList').addEventListener('click', (event) => {
     if (event.target.classList.contains('star-button')) {
+        const replyId = event.target.getAttribute('data-reply-id');
         const commentId = event.target.getAttribute('data-comment-id');
-        const userId = firebase.auth().currentUser.uid; // Get the current user ID
-        const commentRef = db.collection('post').doc(postId).collection('comments').doc(commentId);
+        const userId = firebase.auth().currentUser?.uid;
 
-        commentRef.get().then((doc) => {
+        // Ensure userId is not null or undefined
+        if (!userId) {
+            console.error("No user signed in!");
+            return;
+        }
+
+        let replyRef;
+        if (replyId) {
+            // It's a reply
+            replyRef = db.collection('post').doc(postId).collection('comments').doc(commentId).collection('replies').doc(replyId);
+        } else {
+            // It's a comment, use only the commentId
+            replyRef = db.collection('post').doc(postId).collection('comments').doc(commentId);
+        }
+
+        replyRef.get().then((doc) => {
             if (doc.exists) {
-                const commentData = doc.data();
-                let likes = commentData.likes || [];
+                const replyData = doc.data();
+                let likes = replyData.likes || [];
                 const likeCountElement = event.target.nextElementSibling; // Get the like count span
 
-                if (likes.includes(userId)) {
-                    // User has already liked this comment, so remove the like
-                    likes = likes.filter(id => id !== userId);
-                    event.target.classList.remove('checked'); // Remove checked class
+                if (replyId) {
+                    // Handling for reply
+                    if (likes.includes(userId)) {
+                        likes = likes.filter(id => id !== userId);
+                        event.target.classList.remove('checked');
+                    } else {
+                        likes.push(userId);
+                        event.target.classList.add('checked');
+                    }
                 } else {
-                    // User has not liked this comment, so add the like
-                    likes.push(userId);
-                    event.target.classList.add('checked'); // Add checked class
+                    // Handling for comment
+                    if (likes.includes(userId)) {
+                        likes = likes.filter(id => id !== userId);
+                        event.target.classList.remove('checked');
+                    } else {
+                        likes.push(userId);
+                        event.target.classList.add('checked');
+                    }
                 }
 
                 // Update the likes array in Firestore
-                commentRef.update({ likes })
+                replyRef.update({ likes })
                     .then(() => {
-                        likeCountElement.textContent = likes.length; // Update like count
+                        likeCountElement.textContent = likes.length;
                     })
                     .catch(error => {
                         console.error("Error updating likes: ", error);
                     });
+            } else {
+                console.error("Document does not exist");
             }
+        }).catch(error => {
+            console.error("Error fetching document: ", error);
         });
     }
 });

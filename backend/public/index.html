@@ -69,8 +69,7 @@
     
     <!-- Main Section -->
     <section id="whenSignedOut">
-        <button id="signingoogle" class="btn btn-primary">Sign in with Google</button>
-        <button id="signinemail" class="btn btn-primary">Sign in with Email</button>
+        <button id="signinemail" class="btn btn-primary">Sign in</button>
     </section>
 
     <!-- Sign Up Section -->
@@ -91,13 +90,21 @@
         <input type="password" id="signInPassword" placeholder="Password" required />
         <button id="signInBtn" class="btn btn-primary">Sign In</button>
         <button id="signUpFromSignInBtn" class="btn btn-secondary">Sign Up</button>
+        <button id="forgetPassword" class="btn btn-secondary">Forget Password</button>
         <button id="backFromSignInBtn" class="btn btn-secondary">Back</button>
+    </section>
+
+    <section id="forgetPasswordSection" hidden>
+        <h2>Please Enter Your Email</h2>
+        <input type="email" id="forgetPasswordEmail" placeholder="Email" required />
+        <button id="forgetPasswordConfirm" class="btn btn-primary">Confirm Email</button> 
+        <a href= "index.html" id="backFromforgetPasswordSection" class="btn btn-secondary">Back</a>
     </section>
 
     <!-- User Details Section -->
     <section id="whenSignedIn" hidden>
         <div id="userDetails"></div>
-        <button id="accountswitch" class ="btn btn-primary">Switch Accounts</button>
+        <a href="profile.html" id="profilepage" class ="btn btn-primary">Profile</a>
         <button id="friends" class ="btn btn-primary">Friendlist</button>
         <a href="post.html" id="post" class="btn btn-primary">Create A Post</a>
         <button id="signOutBtn" class="btn btn-primary">Sign Out</button>
