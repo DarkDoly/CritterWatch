@@ -7,6 +7,7 @@ function NavBar() {
         <div className='container'>
             <Link to={'/'} className='navbar-brand'>Critter Watch</Link>
             <Link to={'/forum'} className='navbar-brand'>Hello</Link>
+            <Link to={'/forgotPasswordTemp'} className='navbar-brand'>forgotPasswordTemp</Link>
         </div>
     </nav>
 }
