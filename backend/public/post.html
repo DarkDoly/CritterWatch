@@ -9,6 +9,7 @@
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
     <script defer src="/__/firebase/10.14.0/firebase-firestore-compat.js"></script>
     <script defer src="/__/firebase/10.14.0/firebase-storage-compat.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCFJuRK6w7ygGN2MWA7SAZWK8o4nWpX0rU&libraries=places&callback=initAutocomplete"></script>
     <script src="post.js" defer></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
@@ -24,6 +25,10 @@
             <div class="form-group">
                 <label for="postContent">Content (Optional):</label>
                 <textarea id="postContent" class="form-control"></textarea>
+            </div>
+            <div>
+                <label for="location">Location (City, State, Country):</label>
+                <input type="text" id="location" placeholder="Enter your location" required>
             </div>
             <div class="form-group">
                 <label for="postImage">Select Image:</label>

@@ -1,6 +1,19 @@
 //AUTH RELATED
 const auth = firebase.auth();
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    const firebaseConfig = {
+        apiKey: "AIzaSyCFJuRK6w7ygGN2MWA7SAZWK8o4nWpX0rU",
+        authDomain: "critter-watch-7d415.firebaseapp.com",
+        projectId: "critter-watch-7d415",
+        storageBucket: "critter-watch-7d415.appspot.com",
+        messagingSenderId: "500266994887",
+        appId: "1:500266994887:web:33b58e0edc40a7bb6002e2",
+        measurementId: "G-629HTWWVCN"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.firestore();
 
 const signInSection = document.getElementById('signInSection');
@@ -492,17 +505,59 @@ document.addEventListener('click', (event) => {
     }
 });
 
+// Function to calculate the distance between two coordinates using the Haversine formula
+function haversineDistance(coord1, coord2) {
+    const toRadians = (degrees) => degrees * (Math.PI / 180);
+    
+    const R = 3958.8; // Radius of Earth in miles
+    const lat1 = toRadians(coord1.latitude);
+    const lon1 = toRadians(coord1.longitude);
+    const lat2 = toRadians(coord2.latitude);
+    const lon2 = toRadians(coord2.longitude);
+
+    const dLat = lat2 - lat1;
+    const dLon = lon2 - lon1;
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1) * Math.cos(lat2) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in miles
+}
+
+// Function to get the user's current location
+function getUserLocation() {
+    return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const { latitude, longitude } = position.coords;
+                resolve({ latitude, longitude });
+            }, (error) => {
+                reject(error);
+            });
+        } else {
+            reject(new Error("Geolocation is not supported by this browser."));
+        }
+    });
+}
+
 // Function to display a single post
 function displayPost(postData) {
     const postsContainer = document.getElementById('postsContainer');
     const postDiv = document.createElement('div');
-    postDiv.className = 'col-md-4'; // Bootstrap column class
+    postDiv.className = 'col-md-4';
 
-    db.collection('user').doc(postData.userId).get().then((userDoc) => {
-        const username = userDoc.exists ? userDoc.data().UserName : "Unknown User"; // Fallback if no user data found
+    getUserLocation().then((userLocation) => {
+        const postCoordinates = postData.coordinates;
+        const distance = haversineDistance(userLocation, postCoordinates);
+        const formattedDistance = distance.toFixed(4);
 
-        postDiv.innerHTML = `
-            <div class="card mb-4" style="position: relative;"> <!-- Set position relative -->
+        db.collection('user').doc(postData.userId).get().then((userDoc) => {
+            const username = userDoc.exists ? userDoc.data().UserName : "Unknown User";
+
+            postDiv.innerHTML = `
+            <div class="card mb-4" style="position: relative;">
                 <a href="specpost.html?postId=${postData.id}">
                     <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="max-height: 300px; object-fit: cover;">
                 </a>
@@ -518,53 +573,68 @@ function displayPost(postData) {
                     <p class="card-text"><small class="text-muted">Posted by: 
                         <a href="profile_other.html?userId=${postData.userId}">${username}</a>
                     </small></p>
+                    <p class="card-text"><small class="text-muted">Location: ${postData.relativeLocation || 'Not specified'}</small></p>
+                    <p class="card-text"><small class="text-muted">Distance: ${formattedDistance} miles away</small></p>
                 </div>
                 <!-- Minus button -->
-                <button class="minusBtn btn btn-danger" style="position: absolute; top: 10px; left: 10px; z-index: 10;">-</button>
+                <button class="minusBtn btn btn-danger" style="position: absolute; top: 10px; left: 10px; z-index: 10;" data-post-id="${postData.id}">-</button>
             </div>
-        `;
+            `;
+
+            // Add event listener for the minus button
+            const minusButton = postDiv.querySelector('.minusBtn');
+            minusButton.addEventListener('click', () => {
+                console.log('Minus button clicked for post ID:', postData.id); // Log to confirm click
+                const confirmed = confirm('Are you sure you want to delete this post?');
+                if (confirmed) {
+                    deletePost(postData.id); // Call delete function
+                }
+            });
+        });
     });
 
     postsContainer.appendChild(postDiv);
     return postsContainer;
 }
 
+
 function showMyPosts() {
-    const userId = firebase.auth().currentUser.uid; // Get the current user ID
-    const myPosts = currentPosts.filter(post => post.userId === userId); // Filter posts
+    const userId = firebase.auth().currentUser.uid;
+    const myPosts = currentPosts.filter(post => post.userId === userId);
     const postsContainer = document.getElementById('postsContainer');
-    postsContainer.innerHTML = ''; // Clear previous posts
-    
-    document.getElementById('backToAllPostsBtn').hidden = false; // Show back button
-    document.getElementById('removePost').hidden = false; // Show remove post button
-    document.getElementById('myPost').hidden = true; // Hide the "My Posts" button
+    postsContainer.innerHTML = '';
+
+    document.getElementById('backToAllPostsBtn').hidden = false;
+    document.getElementById('removePost').hidden = false;
+    document.getElementById('myPost').hidden = true;
 
     // Reset visibility of minus buttons
     const minusButtons = document.querySelectorAll('.minusBtn');
     minusButtons.forEach(btn => {
-        btn.classList.remove('visible'); // Ensure they are hidden when entering this view
+        btn.classList.remove('visible');
     });
 
     if (myPosts.length === 0) {
-        postsContainer.innerHTML = '<p>No posts found.</p>'; // Show message if no posts
-        document.getElementById('removePost').hidden = true; // Hide remove post button
-        return; // Exit the function if no posts
+        postsContainer.innerHTML = '<p>No posts found.</p>';
+        document.getElementById('removePost').hidden = true;
+        return;
     }
 
     // Display user posts
     myPosts.forEach(postData => {
-        displayPost(postData); // Display each post
-    
-        // Get the minus button after appending the post
-        const minusButton = postsContainer.lastChild.querySelector('.minusBtn'); 
-    
-        // Add event listener for the minus button
-        minusButton.addEventListener('click', () => {
-            const confirmed = confirm('Are you sure you want to delete this post?');
-            if (confirmed) {
-                deletePost(postData.id); // Call delete function
-            }
-        });
+        displayPost(postData);
+
+        // Check if the minus button exists after rendering
+        const minusButton = postsContainer.lastChild.querySelector('.minusBtn');
+        if (minusButton) {
+            // Add event listener for the minus button if it exists
+            minusButton.addEventListener('click', () => {
+                const confirmed = confirm('Are you sure you want to delete this post?');
+                if (confirmed) {
+                    deletePost(postData.id);
+                }
+            });
+        }
     });
 }
 

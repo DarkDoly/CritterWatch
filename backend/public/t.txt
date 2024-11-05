@@ -1,100 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Critter Watch</title>
-    <script defer src="/__/firebase/10.14.0/firebase-app-compat.js"></script>
-    <script defer src="/__/firebase/10.14.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-    <script src="auth.js" defer></script>
-    <script src="friends.js" defer></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-</head>
-<body>
-    <h1>Critter Watch</h1>
-    
-    <!-- Main Section -->
-    <section id="whenSignedOut">
-        <button id="signingoogle" class="btn btn-primary">Sign in with Google</button>
-        <button id="signinemail" class="btn btn-primary">Sign in with Email</button>
-    </section>
-
-    <!-- Sign Up Section -->
-    <section id="signUpSection" hidden>
-        <h2>Sign Up</h2>
-        <input type="email" id="signUpEmail" placeholder="Email" required />
-        <input type="password" id="signUpPassword" placeholder="Password" required />
-        <input type="password" id="signUpConfirmPassword" placeholder="Confirm Password" required />
-        <button id="signUpBtn" class="btn btn-primary">Sign Up</button>
-        <button id="backToSignInBtn" class="btn btn-secondary">Back to Sign In</button>
-    </section>
-
-    <!-- Sign In Section -->
-    <section id="signInSection" hidden>
-        <h2>Sign In</h2>
-        <input type="email" id="signInEmail" placeholder="Email" required />
-        <input type="password" id="signInPassword" placeholder="Password" required />
-        <button id="signInBtn" class="btn btn-primary">Sign In</button>
-        <button id="signUpFromSignInBtn" class="btn btn-secondary">Sign Up</button>
-        <button id="backFromSignInBtn" class="btn btn-secondary">Back</button>
-    </section>
-
-    <!-- User Details Section -->
-    <section id="whenSignedIn" hidden>
-        <div id="userDetails"></div>
-        <button id="accountswitch" class ="btn btn-primary">Switch Accounts</button>
-        <button id="friends" class ="btn btn-primary">Friendlist</button>
-        <button id="post" class ="btn btn-primary">Create A Post</button>
-        <button id="signOutBtn" class="btn btn-primary">Sign Out</button>
-    </section>
-    
-    <section id="friendsSection" hidden>
-      <h2>Your Friends</h2>
-      <ul id="friendsList" class="list-group"></ul>
-      <button id="addFriendBtn" class="btn btn-secondary">Add Friend</button>
-      <button id="backFromFriendsSection" class="btn btn-secondary">Back</button>
-    </section>
-    
-    <!-- Account Modal -->
-    <div class="modal fade" id="accountModal" tabindex="-1" role="dialog" aria-labelledby="accountModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="accountModalLabel">Switch Accounts</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul id="accountList" class="list-group"></ul>
-                    <button id="addAccountBtn" class="btn btn-secondary mt-2">Add Existing Account</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+//AUTH RELATED
 const auth = firebase.auth();
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 const signInSection = document.getElementById('signInSection');
 const signUpSection = document.getElementById('signUpSection');
 const whenSignedIn = document.getElementById('whenSignedIn');
 const whenSignedOut = document.getElementById('whenSignedOut');
 
-const signInBtn = document.getElementById('signInBtn');
 const signOutBtn = document.getElementById('signOutBtn');
+const signInBtn = document.getElementById('signInBtn');
 const signUpBtn = document.getElementById('signUpBtn');
 const backToSignInBtn = document.getElementById('backToSignInBtn');
 const signUpFromSignInBtn = document.getElementById('signUpFromSignInBtn');
 const backFromSignInBtn = document.getElementById('backFromSignInBtn');
 const backFromFriendsSection = document.getElementById('backFromFriendsSection')
+
+const signUpUsernameInput = document.getElementById('signUpUsername')
 const signUpEmailInput = document.getElementById('signUpEmail');
 const signUpPasswordInput = document.getElementById('signUpPassword');
 const signUpConfirmPasswordInput = document.getElementById('signUpConfirmPassword');
 
 const signInEmailInput = document.getElementById('signInEmail');
 const signInPasswordInput = document.getElementById('signInPassword');
+
+const forgetPassword = document.getElementById('forgetPassword');
+const forgetPasswordSection = document.getElementById('forgetPasswordSection')
+const forgetPasswordEmail = document.getElementById('forgetPasswordEmail')
+const forgetPasswordConfirm = document.getElementById('forgetPasswordConfirm')
 
 const userDetails = document.getElementById('userDetails');
 
@@ -106,6 +39,7 @@ function clearInputFields() {
     signUpConfirmPasswordInput.value = '';
     signInEmailInput.value = '';
     signInPasswordInput.value = '';
+    forgetPasswordEmail.value = '';
 }
 
 // Show sign up section
@@ -130,6 +64,7 @@ backToSignInBtn.onclick = () => {
 
 // Sign Up event handler
 signUpBtn.onclick = () => {
+    const username = signUpUsernameInput.value;
     const email = signUpEmailInput.value;
     const password = signUpPasswordInput.value;
 
@@ -138,13 +73,32 @@ signUpBtn.onclick = () => {
         return;
     }
 
+    // Check if the username contains '@'
+    if (username.includes('@')) {
+        alert("Username cannot include '@'.");
+        return;
+    }
+
+// Check if the username is already taken
+db.collection('user').where("UserName", "==", username).get()
+.then(querySnapshot => {
+    if (!querySnapshot.empty) {
+        alert("Username is already taken. Please choose another one.");
+        return;
+    }
+
+    // Proceed with sign-up if the username is unique
     auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
             console.log("Signed up:", userCredential.user);
+
             // Create user document in Firestore
             db.collection('user').doc(userCredential.user.uid).set({
-                ID: userCredential.user.uid,
-                friends_ID: [] // Initialize with an empty array
+                UserID: userCredential.user.uid,
+                UserName: username, // Save the username
+                UserEmail: email,   // Save the user email
+                friends_ID: [],      // Initialize with an empty array of tuples
+                friends_Names: []
             })
             .then(() => {
                 console.log("User document created successfully.");
@@ -159,22 +113,93 @@ signUpBtn.onclick = () => {
             console.error("Error signing up:", error);
             alert(error.message);
         });
+    })
+    .catch(error => {
+        console.error("Error checking username uniqueness:", error);
+        alert("Failed to check username uniqueness. Please try again.");
+    });
 };
 
-// Sign In event handler
+//Sign in event handler
 signInBtn.onclick = () => {
-    const email = signInEmailInput.value;
+    const emailOrUsername = signInEmailInput.value;
     const password = signInPasswordInput.value;
 
-    auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-            console.log("Signed in:", userCredential.user);
-            showUserDetails(userCredential.user);
-        })
-        .catch(error => {
-            console.error("Error signing in:", error);
-            alert(error.message);
-        });
+    // Determine if the input is a username or an email
+    let userDocRef;
+
+    // Check for a valid email or username
+    if (emailOrUsername.includes('@')) {
+        // If it includes '@', treat it as an email
+        userDocRef = db.collection('user').where("UserEmail", "==", emailOrUsername);
+    } else {
+        // Treat it as a username
+        userDocRef = db.collection('user').where("UserName", "==", emailOrUsername);
+    }
+
+    userDocRef.get().then(snapshot => {
+        if (snapshot.empty) {
+            alert("No user found with that email or username.");
+            return;
+        }
+
+        // Get the user document and user ID
+        const userId = snapshot.docs[0].id;
+
+        // Now, sign in using the email and password
+        auth.signInWithEmailAndPassword(snapshot.docs[0].data().UserEmail, password)
+            .then(userCredential => {
+                console.log("Signed in:", userCredential.user);
+                showUserDetails(userCredential.user);
+            })
+            .catch(error => {
+                console.error("Error signing in:", error);
+                alert(error.message);
+            });
+    }).catch(error => {
+        console.error("Error searching for user:", error);
+        alert(error.message);
+    });
+};
+
+forgetPassword.onclick = () => {
+    clearInputFields();
+    signInSection.hidden = true;
+    forgetPasswordSection.hidden = false;
+}
+
+forgetPasswordConfirm.onclick = () => {
+    const email = document.getElementById('forgetPasswordEmail').value.trim();
+
+    if (email) {
+        // Check if the email exists in the Firestore 'user' collection
+        db.collection('user')
+            .where("UserEmail", "==", email)
+            .get()
+            .then(snapshot => {
+                if (!snapshot.empty) {
+                    // If email is found, send the password reset email
+                    firebase.auth().sendPasswordResetEmail(email)
+                        .then(() => {
+                            alert("Password reset email sent! Check your inbox.");
+                            
+                        })
+                        .catch(error => {
+                            console.error("Error sending password reset email:", error);
+                            alert("Failed to send password reset email. Please check the email and try again.");
+                        });
+                } else {
+                    // If email is not found in the Firestore collection
+                    alert("This email is not registered with us.");
+                }
+            })
+            .catch(error => {
+                console.error("Error checking email in Firestore:", error);
+                alert("An error occurred. Please try again later.");
+            });
+    } else {
+        alert("Please enter your email address.");
+    }
 };
 
 // Show sign in section when clicking "Sign in with Email"
@@ -183,46 +208,6 @@ document.getElementById('signinemail').onclick = () => {
     whenSignedOut.hidden = true; // Hide main sign-out section
     signInSection.hidden = false; // Show sign-in section
 };
-
-// Sign in with google
-document.getElementById('signingoogle').onclick = () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .then(userCredential => {
-            console.log("Signed in with Google:", userCredential.user);
-
-            // Reference to the user document
-            const userDocRef = db.collection('user').doc(userCredential.user.uid);
-
-            // Check if the user document already exists
-            userDocRef.get().then(doc => {
-                if (doc.exists) {
-                    console.log("User document already exists:", doc.data());
-                    // You can update UI or perform other actions here
-                } else {
-                    // User document does not exist, create it
-                    console.log("Creating new user document for:", userCredential.user.uid);
-                    return userDocRef.set({
-                        ID: userCredential.user.uid,
-                        friends_ID: [] // Initialize with an empty array
-                    });
-                }
-            })
-            .then(() => {
-                console.log("User document created successfully.");
-                showUserDetails(userCredential.user);
-            })
-            .catch(error => {
-                console.error("Error accessing user document:", error);
-                alert(error.message);
-            });
-        })
-        .catch(error => {
-            console.error("Error signing in with Google:", error);
-            alert(error.message);
-        });
-};
-
 
 // Sign Out event handler
 signOutBtn.onclick = () => {
@@ -235,23 +220,22 @@ signOutBtn.onclick = () => {
 
 // Show user details and switch to signed-in view
 function showUserDetails(user) {
+    const userDocRef = db.collection('user').doc(user.uid);
+    userDocRef.get().then(doc => {
+        if (doc.exists) {
+            const userData = doc.data();
+            userDetails.innerHTML = `<h3>Hello ${userData.UserName}!</h3>`;
+        } else {
+            console.log("No user document found.");
+        }
+    }).catch(error => {
+        console.error("Error fetching user document:", error);
+    });
     whenSignedOut.hidden = true;
     signInSection.hidden = true;
     signUpSection.hidden = true;
-    whenSignedIn.hidden = false; 
-    userDetails.innerHTML = `<h3>Hello ${user.email}!</h3> <p>User ID: ${user.uid}</p>`;
+    whenSignedIn.hidden = false;
 }
-
-// Auth state change listener
-auth.onAuthStateChanged(user => {
-    if (user) {
-        showUserDetails(user);
-    } else {
-        // No user is signed in
-        whenSignedIn.hidden = true;
-        whenSignedOut.hidden = false; // Show main sign-in section
-    }
-}); 
 
 backFromFriendsSection.onclick = () => {
     clearInputFields();  // Clear fields before showing sign-up
@@ -259,48 +243,37 @@ backFromFriendsSection.onclick = () => {
     whenSignedIn.hidden = false;
 };
 
-document.getElementById('friends').onclick = () => {
-    document.getElementById('whenSignedIn').hidden = true; // Hide signed-in section
-    document.getElementById('friendsSection').hidden = false; // Show friends section
-    getFriends(); // Fetch friends when entering this section
-};
 
-// Event listener for adding a friend
-document.getElementById('addFriendBtn').onclick = () => {
-    const friendEmail = prompt("Enter friend's email:");
-    if (friendEmail) {
-        addFriend(friendEmail); // Call the function to add a friend
-    } else {
-        alert("Email is required.");
-    }
-};
 
-// Auth state change listener
-auth.onAuthStateChanged(user => {
-    if (user) {
-        getFriends(); // Get friends if signed in
-    }
-});
-// friends.js
 
-const db = firebase.firestore();
+
+
+// ------------------------------------------------------------
+// FRIENDS RELATED
+
+
+
+
 
 // Function to add a friend
 function addFriend(friendEmail) {
     const user = firebase.auth().currentUser;
     if (user) {
-        // Check if the friend exists in the database
-        db.collection('user').where("email", "==", friendEmail).get()
+        // Check if the friend exists in the database using UserEmail
+        db.collection('user').where("UserEmail", "==", friendEmail).get()
             .then(snapshot => {
                 if (!snapshot.empty) {
                     snapshot.forEach(doc => {
                         const friendId = doc.id; // Get the friend's ID
+                        const friendName = doc.data().UserName; // Get the friend's username
+
                         // Update the user's document with the new friend's details
                         db.collection('user').doc(user.uid).update({
-                            friends_ID: firebase.firestore.FieldValue.arrayUnion([friendId, friendEmail])
+                            friends_ID: firebase.firestore.FieldValue.arrayUnion(friendId), // Add friend ID
+                            friends_Names: firebase.firestore.FieldValue.arrayUnion(friendName) // Add friend's username
                         })
                         .then(() => {
-                            console.log("Friend added:", friendEmail);
+                            console.log("Friend added:", friendName);
                             getFriends(); // Refresh the friends list
                         })
                         .catch(error => {
@@ -328,8 +301,9 @@ function getFriends() {
         db.collection('user').doc(user.uid).get()
             .then(doc => {
                 if (doc.exists) {
-                    const friends = doc.data().friends || [];
-                    displayFriends(friends);
+                    const friendsIDs = doc.data().friends_ID || [];
+                    // Now fetch usernames for each friend ID
+                    fetchFriendUsernames(friendsIDs);
                 } else {
                     console.log("No friends found.");
                 }
@@ -342,14 +316,466 @@ function getFriends() {
     }
 }
 
+// Function to fetch usernames for friend IDs
+function fetchFriendUsernames(friendsIDs) {
+    const friendsPromises = friendsIDs.map(friendId => {
+        return db.collection('user').doc(friendId).get()
+            .then(friendDoc => {
+                if (friendDoc.exists) {
+                    return { id: friendId, username: friendDoc.data().UserName };
+                } else {
+                    return null; // Friend not found
+                }
+            });
+    });
+
+    Promise.all(friendsPromises).then(friends => {
+        // Filter out null values and display friends
+        const validFriends = friends.filter(friend => friend !== null);
+        displayFriends(validFriends);
+    }).catch(error => {
+        console.error("Error fetching friend usernames:", error);
+    });
+}
+
 // Function to display friends
 function displayFriends(friends) {
     const friendsList = document.getElementById('friendsList');
     friendsList.innerHTML = ''; // Clear previous friends
+
     friends.forEach(friend => {
         const listItem = document.createElement('li');
         listItem.className = 'list-group-item';
-        listItem.textContent = `ID: ${friend[0]}, Email: ${friend[1]}`; // Display ID and email
+
+        listItem.textContent = `Username: ${friend.username}`; // Display the friend's username
+
+        // Create a button for removing the friend
+        const removeButton = document.createElement('button');
+        removeButton.className = 'btn btn-danger btn-sm float-right';
+        removeButton.textContent = 'Remove';
+
+        // Add click event for removing the friend
+        removeButton.onclick = () => {
+            const confirmRemove = confirm(`Are you sure you want to remove ${friend.username} from your friends list?`);
+            if (confirmRemove) {
+                removeFriend(friend.id);
+            }
+        };
+
+        // Create a button for messaging the friend
+        const messageButton = document.createElement('button');
+        messageButton.className = 'btn btn-primary btn-sm float-right mr-2';
+        messageButton.textContent = 'Message';
+
+        // Add click event to navigate to the message page
+        messageButton.onclick = () => {
+            window.location.href = 'message.html'; // Redirect to message page
+        };
+
+        // Append the buttons to the list item
+        listItem.appendChild(messageButton);
+        listItem.appendChild(removeButton);
         friendsList.appendChild(listItem);
     });
 }
+
+// Function to remove a friend
+function removeFriend(friendId) {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        // Get the friend's document to retrieve their username
+        db.collection('user').doc(friendId).get().then(doc => {
+            if (doc.exists) {
+                const friendName = doc.data().UserName; // Get the friend's username
+                
+                // Update the user's document to remove the friend ID and name
+                db.collection('user').doc(user.uid).update({
+                    friends_ID: firebase.firestore.FieldValue.arrayRemove(friendId),
+                    friends_Names: firebase.firestore.FieldValue.arrayRemove(friendName)
+                })
+                .then(() => {
+                    console.log("Friend removed:", friendId);
+                    getFriends(); // Refresh the friends list
+                })
+                .catch(error => {
+                    console.error("Error removing friend:", error);
+                    alert(error.message);
+                });
+            } else {
+                console.error("Friend document not found:", friendId);
+            }
+        }).catch(error => {
+            console.error("Error fetching friend document:", error);
+        });
+    } else {
+        alert("No user signed in.");
+    }
+}
+
+// Event listener for adding a friend
+document.getElementById('addFriendBtn').onclick = () => {
+    const friendEmail = prompt("Enter friend's email:");
+    if (friendEmail) {
+        addFriend(friendEmail); // Call the function to add a friend
+    } else {
+        alert("Email is required.");
+    }
+};
+
+document.getElementById('friends').onclick = () => {
+    document.getElementById('whenSignedIn').hidden = true; // Hide signed-in section
+    document.getElementById('friendsSection').hidden = false; // Show friends section
+    getFriends(); // Fetch friends when entering this section
+};
+
+
+
+
+
+//--------------------------------------------------------------------------------------------
+// POST RELATED
+
+
+
+
+
+
+function getPosts() {
+    const postsRef = db.collection('post');
+    postsRef.get().then(snapshot => {
+        currentPosts = []; // Clear previous posts
+        snapshot.forEach(doc => {
+            const postData = { id: doc.id, ...doc.data() }; // Include doc ID
+            currentPosts.push(postData); // Store each post in currentPosts
+        });
+        displaySortedPosts(); // Display posts initially
+    }).catch(error => {
+        console.error("Error fetching posts: ", error);
+    });
+}
+
+// Event delegation for star button clicks
+document.addEventListener('click', (event) => {
+    if (event.target.classList.contains('star-button')) {
+        const postId = event.target.getAttribute('data-post-id');
+        const userId = firebase.auth().currentUser.uid; // Get the current user ID
+        const postRef = db.collection('post').doc(postId);
+
+        postRef.get().then((doc) => {
+            if (doc.exists) {
+                const postData = doc.data();
+                let likes = postData.likes || [];
+                const likeCountElement = event.target.nextElementSibling; // Get the like count span
+
+                if (likes.includes(userId)) {
+                    // User has already liked this post, so remove the like
+                    likes = likes.filter(id => id !== userId);
+                    event.target.classList.remove('checked'); // Remove checked class
+                    event.target.classList.add('unchecked'); // Add unchecked class
+                } else {
+                    // User has not liked this post, so add the like
+                    likes.push(userId);
+                    event.target.classList.add('checked'); // Add checked class
+                    event.target.classList.remove('unchecked'); // Remove unchecked class
+                }
+
+                // Update the likes array in Firestore
+                postRef.update({ likes })
+                    .then(() => {
+                        likeCountElement.textContent = likes.length; // Update like count
+                    })
+                    .catch(error => {
+                        console.error("Error updating likes: ", error);
+                    });
+            }
+        });
+    }
+});
+
+// Function to display a single post
+function displayPost(postData) {
+    const postsContainer = document.getElementById('postsContainer');
+    const postDiv = document.createElement('div');
+    postDiv.className = 'col-md-4'; // Bootstrap column class
+
+    db.collection('user').doc(postData.userId).get().then((userDoc) => {
+        const username = userDoc.exists ? userDoc.data().UserName : "Unknown User"; // Fallback if no user data found
+
+        postDiv.innerHTML = `
+            <div class="card mb-4" style="position: relative;"> <!-- Set position relative -->
+                <a href="specpost.html?postId=${postData.id}">
+                    <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="max-height: 300px; object-fit: cover;">
+                </a>
+                <div class="card-body">
+                    <div class="like-container" style="display: flex; align-items: center;">
+                        <button class="star-button ${postData.likes && postData.likes.includes(firebase.auth().currentUser.uid) ? 'checked' : 'unchecked'}" data-post-id="${postData.id}">
+                            ★
+                        </button>
+                        <span class="likeCount">${postData.likes ? postData.likes.length : 0}</span>
+                    </div>
+                    <h5 class="card-title">${postData.title}</h5>
+                    <p class="card-text">${postData.content}</p>
+                    <p class="card-text"><small class="text-muted">Posted by: 
+                        <a href="profile_other.html?userId=${postData.userId}">${username}</a>
+                    </small></p>
+                </div>
+                <!-- Minus button -->
+                <button class="minusBtn btn btn-danger" style="position: absolute; top: 10px; left: 10px; z-index: 10;">-</button>
+            </div>
+        `;
+    });
+
+    postsContainer.appendChild(postDiv);
+    return postsContainer;
+}
+
+function showMyPosts() {
+    const userId = firebase.auth().currentUser.uid; // Get the current user ID
+    const myPosts = currentPosts.filter(post => post.userId === userId); // Filter posts
+    const postsContainer = document.getElementById('postsContainer');
+    postsContainer.innerHTML = ''; // Clear previous posts
+    
+    document.getElementById('backToAllPostsBtn').hidden = false; // Show back button
+    document.getElementById('removePost').hidden = false; // Show remove post button
+    document.getElementById('myPost').hidden = true; // Hide the "My Posts" button
+
+    // Reset visibility of minus buttons
+    const minusButtons = document.querySelectorAll('.minusBtn');
+    minusButtons.forEach(btn => {
+        btn.classList.remove('visible'); // Ensure they are hidden when entering this view
+    });
+
+    if (myPosts.length === 0) {
+        postsContainer.innerHTML = '<p>No posts found.</p>'; // Show message if no posts
+        document.getElementById('removePost').hidden = true; // Hide remove post button
+        return; // Exit the function if no posts
+    }
+
+    // Display user posts
+    myPosts.forEach(postData => {
+        displayPost(postData); // Display each post
+    
+        // Get the minus button after appending the post
+        const minusButton = postsContainer.lastChild.querySelector('.minusBtn'); 
+    
+        // Add event listener for the minus button
+        minusButton.addEventListener('click', () => {
+            const confirmed = confirm('Are you sure you want to delete this post?');
+            if (confirmed) {
+                deletePost(postData.id); // Call delete function
+            }
+        });
+    });
+}
+
+// Event listener to toggle visibility of minus buttons
+document.getElementById('removePost').addEventListener('click', () => {
+    const minusButtons = document.querySelectorAll('.minusBtn');
+    minusButtons.forEach(btn => {
+        // Toggle a class instead of changing display directly
+        btn.classList.toggle('visible'); 
+    });
+});
+
+document.getElementById('backToAllPostsBtn').addEventListener('click', () => {
+    backToAllPostsBtn.hidden = true;
+    document.getElementById('removePost').hidden = true; // Hide remove post button
+    document.getElementById('myPost').hidden = false; // Show "My Posts" button
+    getPosts(); // Fetch and display all posts again
+});
+
+// Delete post function
+function deletePost(postId) {
+    // Filter out the post from currentPosts immediately
+    currentPosts = currentPosts.filter(post => post.id !== postId);
+    // Proceed to delete the post from Firestore
+    db.collection('post').doc(postId).delete()
+        .then(() => {
+            console.log("Post successfully deleted!");
+            showMyPosts(); // Refresh to reflect changes in "My Posts"
+        })
+        .catch((error) => {
+            console.error("Error removing post: ", error);
+            // Optionally handle the error, e.g., revert UI state
+        });
+}
+// Existing code for My Posts button
+document.getElementById('myPost').addEventListener('click', showMyPosts);
+
+// Sort posts by likes or creation date
+function sortPosts(criteria, order) {
+    if (criteria === 'likes') {
+        currentPosts.sort((a, b) => (order === 'asc' ? a.likes.length - b.likes.length : b.likes.length - a.likes.length));
+    } else if (criteria === 'date') {
+        currentPosts.sort((a, b) => (order === 'asc' ? a.createdAt.seconds - b.createdAt.seconds : b.createdAt.seconds - a.createdAt.seconds));
+    }
+    displaySortedPosts();
+}
+
+// Display sorted posts
+function displaySortedPosts() {
+    const postsContainer = document.getElementById('postsContainer');
+    postsContainer.innerHTML = ''; // Clear previous posts
+    currentPosts.forEach(postData => {
+        displayPost(postData); // Re-display posts in sorted order
+    });
+}
+
+// Event listener for sort options
+document.getElementById('sortOptions').addEventListener('change', (event) => {
+    const [criteria, order] = event.target.value.split('-');
+    sortPosts(criteria, order);
+});
+
+let currentPosts = []; // Global array to hold all posts
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        showUserDetails(user);
+        getPosts(); // Fetch and display posts if signed in
+        whenSignedIn.hidden = false;
+        whenSignedOut.hidden = true; // Hide sign-in section
+    } else {
+        whenSignedIn.hidden = true;
+        whenSignedOut.hidden = false; // Show main sign-in section
+    }
+});
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Critter Watch</title>
+    <script defer src="/__/firebase/10.14.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-firestore-compat.js"></script>
+    <script src="main.js" defer></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        .card {
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-body {
+            flex: 1;
+        }
+        .card-img-top {
+            object-fit: cover;
+            height: 300px;
+        }
+    </style>
+    <style>
+        .like-container {
+            display: flex;
+            align-items: center; /* Center items vertically */
+        }
+        .star-button {
+            background: none;
+            border: none;
+            font-size: 35px; /* Adjust size as needed */
+            cursor: pointer;
+            color: black; /* Unchecked star color */
+            transition: color 0.3s; /* Smooth transition */
+        }
+
+        .star-button.checked {
+            color: gold; /* Checked star color */
+        }
+
+        .star-button:hover {
+            color: gray; /* Hover color */
+        }
+
+        .star-button.unchecked:hover {
+            color: orange; /* Hover color for unchecked star */
+        }
+    </style>
+    <style>
+    .minusBtn {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
+        display: none; /* Start as hidden */
+    }
+
+    .minusBtn.visible {
+        display: inline-block; /* Show when visible class is added */
+    }
+    </style>
+</head>
+<body>
+    <h1>Critter Watch</h1>
+    
+    <!-- Main Section -->
+    <section id="whenSignedOut">
+        <button id="signinemail" class="btn btn-primary">Sign in</button>
+    </section>
+
+    <!-- Sign Up Section -->
+    <section id="signUpSection" hidden>
+        <h2>Sign Up</h2>
+        <input type="username" id="signUpUsername" placeholder="John Doe" required />
+        <input type="email" id="signUpEmail" placeholder="Email" required />
+        <input type="password" id="signUpPassword" placeholder="Password" required />
+        <input type="password" id="signUpConfirmPassword" placeholder="Confirm Password" required />
+        <button id="signUpBtn" class="btn btn-primary">Sign Up</button>
+        <button id="backToSignInBtn" class="btn btn-secondary">Back to Sign In</button>
+    </section>
+
+    <!-- Sign In Section -->
+    <section id="signInSection" hidden>
+        <h2>Sign In</h2>
+        <input type="email" id="signInEmail" placeholder="Email or Username" required />
+        <input type="password" id="signInPassword" placeholder="Password" required />
+        <button id="signInBtn" class="btn btn-primary">Sign In</button>
+        <button id="signUpFromSignInBtn" class="btn btn-secondary">Sign Up</button>
+        <button id="forgetPassword" class="btn btn-secondary">Forget Password</button>
+        <button id="backFromSignInBtn" class="btn btn-secondary">Back</button>
+    </section>
+
+    <section id="forgetPasswordSection" hidden>
+        <h2>Please Enter Your Email</h2>
+        <input type="email" id="forgetPasswordEmail" placeholder="Email" required />
+        <button id="forgetPasswordConfirm" class="btn btn-primary">Confirm Email</button> 
+        <a href= "index.html" id="backFromforgetPasswordSection" class="btn btn-secondary">Back</a>
+    </section>
+
+    <!-- User Details Section -->
+    <section id="whenSignedIn" hidden>
+        <div id="userDetails"></div>
+        <a href="profile.html" id="profilepage" class ="btn btn-primary">Profile</a>
+        <button id="friends" class ="btn btn-primary">Friendlist</button>
+        <a href="post.html" id="post" class="btn btn-primary">Create A Post</a>
+        <button id="signOutBtn" class="btn btn-primary">Sign Out</button>
+    
+        <!-- Posts Section -->
+        <h2>Newest Posts</h2>
+        <div class="form-group">
+            <label for="sortOptions">Sort By:</label>
+            <select id="sortOptions" class="form-control">
+                <option value="likes-asc">Likes (Least to Most)</option>
+                <option value="likes-desc">Likes (Most to Least)</option>
+                <option value="date-asc">Date (Oldest to Newest)</option>
+                <option value="date-desc">Date (Newest to Oldest)</option>
+            </select>
+            <button id="myPost" class="btn btn-primary mt-2">My Post</button>
+            <button id="removePost" class="btn btn-primary mt-2"hidden>Remove Your Posts</button>
+            <button id="backToAllPostsBtn" class="btn btn-primary mt-2" hidden>Back to All Posts</button>
+        </div>
+        <div class="container">
+            <div class="row" id="postsContainer"></div>
+        </div>
+    </section>
+    
+    <section id="friendsSection" hidden>
+      <h2>Your Friends</h2>
+      <ul id="friendsList" class="list-group"></ul>
+      <button id="addFriendBtn" class="btn btn-secondary">Add Friend</button>
+      <button id="backFromFriendsSection" class="btn btn-secondary">Back</button>
+    </section>
+</html>
+

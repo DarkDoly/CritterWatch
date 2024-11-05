@@ -21,6 +21,37 @@ const postForm = document.getElementById('postForm');
 const messageDiv = document.getElementById('message');
 const postImage = document.getElementById('postImage');
 const imagePreview = document.getElementById('imagePreview');
+const locationInput = document.getElementById('location'); // New location input
+
+// Function to get the user's current location
+function getUserLocation() {
+    return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const { latitude, longitude } = position.coords;
+                resolve({ latitude, longitude });
+            }, (error) => {
+                reject(error);
+            });
+        } else {
+            reject(new Error("Geolocation is not supported by this browser."));
+        }
+    });
+}
+
+// Initialize Google Places Autocomplete
+function initAutocomplete() {
+    const autocomplete = new google.maps.places.Autocomplete(locationInput, {
+        componentRestrictions: { country: 'all' } // Adjust as necessary
+    });
+
+    autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place && place.formatted_address) {
+            locationInput.value = place.formatted_address; // Set the input value to the selected place
+        }
+    });
+}
 
 // Preview the selected image
 postImage.addEventListener('change', (event) => {
@@ -38,11 +69,12 @@ postImage.addEventListener('change', (event) => {
 });
 
 // Handle form submission
-postForm.addEventListener('submit', (event) => {
+postForm.addEventListener('submit', async (event) => {
     event.preventDefault(); // Prevent default form submission
 
     const title = document.getElementById('postTitle').value.trim();
     const content = document.getElementById('postContent').value; // Description can be empty
+    const relativeLocation = locationInput.value.trim(); // Get the relative location from input
 
     // Check if title is provided
     if (!title) {
@@ -72,29 +104,37 @@ postForm.addEventListener('submit', (event) => {
             messageDiv.textContent = "Error uploading file: " + error.message;
             createPostButton.disabled = false; // Re-enable the button
         }, 
-        () => {
+        async () => {
             // Handle successful uploads on complete
-            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            try {
+                const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
                 const user = firebase.auth().currentUser;
-                
+
                 if (!user) {
                     alert("You must be logged in to create a post.");
                     createPostButton.disabled = false;
                     return;
                 }
 
-                // Save the post data to Firestore, including the image URL and user ID
-                return db.collection('post').add({
+                // Get user location
+                const userLocation = await getUserLocation();
+
+                // Save the post data to Firestore, including the image URL, user ID, and location data
+                await db.collection('post').add({
                     title: title,
                     content: content,
                     imageUrl: downloadURL,
                     likes: [], // Initialize likes array
                     userId: user.uid, // Store user ID
+                    coordinates: {
+                        latitude: userLocation.latitude,
+                        longitude: userLocation.longitude,
+                    },
+                    relativeLocation: relativeLocation, // Save the selected relative location
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     comments: [] // Initialize empty comments array (if desired for easier retrieval)
                 });
-            })
-            .then(() => {
+
                 messageDiv.textContent = "Post created successfully!";
                 postForm.reset(); // Reset the form
                 imagePreview.style.display = 'none'; // Hide the image preview
@@ -102,15 +142,19 @@ postForm.addEventListener('submit', (event) => {
 
                 // Redirect to the main page
                 window.location.href = 'index.html'; // Redirect to your main page
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error("Error creating post: ", error);
                 messageDiv.textContent = "Error creating post: " + error.message;
                 createPostButton.disabled = false; // Re-enable the button
-            });
+            }
         }
     );
 });
+
+// Initialize the Google Places Autocomplete when the window loads
+window.onload = () => {
+    initAutocomplete();
+};
 
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
