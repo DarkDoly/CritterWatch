@@ -17,44 +17,220 @@ const db = firebase.firestore();
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('postId');
 
-// Function to fetch and display post details
-function displayPost() {
-    return new Promise((resolve, reject) => { // Return a promise
+function haversineDistance(coord1, coord2) {
+    const toRadians = (degrees) => degrees * (Math.PI / 180);
+    
+    const R = 3958.8; // Radius of Earth in miles
+    const lat1 = toRadians(coord1.latitude);
+    const lon1 = toRadians(coord1.longitude);
+    const lat2 = toRadians(coord2.latitude);
+    const lon2 = toRadians(coord2.longitude);
+
+    const dLat = lat2 - lat1;
+    const dLon = lon2 - lon1;
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1) * Math.cos(lat2) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in miles
+}
+
+// Function to get the user's current location
+function getUserLocation() {
+    return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const { latitude, longitude } = position.coords;
+                resolve({ latitude, longitude });
+            }, (error) => {
+                reject(error);
+            });
+        } else {
+            reject(new Error("Geolocation is not supported by this browser."));
+        }
+    });
+}
+
+function displayPost(postId) {
+    return new Promise((resolve, reject) => {
         const postRef = db.collection('post').doc(postId);
         const commentsList = document.getElementById("commentsList");
-        
+
         // Clear the comments list each time displayPost is called
         commentsList.innerHTML = ""; 
+
+        console.log("Fetching post with ID:", postId); 
 
         postRef.get().then((doc) => {
             if (doc.exists) {
                 const postData = doc.data();
+                const imageUrls = postData.imageUrls; 
+                let currentImageIndex = 0;
 
-                // Populate the post container with data
-                document.getElementById('postImage').src = postData.imageUrl;
-                document.getElementById('postTitle').textContent = postData.title;
-                document.getElementById('postContent').textContent = postData.content;
+                // Fetch username from the user collection
+                const userRef = db.collection('user').doc(postData.userId);
+                userRef.get().then((userDoc) => {
+                    let username = "Unknown User"; // Default username
+                    if (userDoc.exists) {
+                        username = userDoc.data().UserName; // Get username from user document
+                    } else {
+                        console.warn("No user document found for userId:", postData.userId);
+                    }
 
-                resolve();
+                    // Populate the post container with data
+                    const postContainer = document.getElementById('postContainer');
+
+                    let createdAt;
+
+                    // Check if createdAt is a Firestore Timestamp
+                    if (postData.createdAt && postData.createdAt instanceof firebase.firestore.Timestamp) {
+                        createdAt = postData.createdAt.toDate(); // Convert Firestore Timestamp to Date
+                    } else if (typeof postData.createdAt === 'number') {
+                        // Check if createdAt is a Unix timestamp (milliseconds since epoch)
+                        createdAt = new Date(postData.createdAt); // Convert Unix timestamp to Date
+                    } else {
+                        console.warn("Invalid createdAt value, defaulting to current date.");
+                        createdAt = new Date(); // Default to current date if invalid
+                    }
+
+                    // Populate the post container with data
+                    postContainer.innerHTML = `
+                        <img id="postImage" src="${imageUrls && imageUrls.length > 0 ? imageUrls[0] : ''}" alt="Post Image" style="max-height: 300px; object-fit: cover;">
+                        <div>
+                            <button id="prevImageBtn" class="btn btn-secondary">Previous Image</button>
+                            <button id="nextImageBtn" class="btn btn-secondary">Next Image</button>
+                        </div>
+                        <h1 id="postTitle">${postData.title}</h1>
+                        <p id="postContent">${postData.content}</p>
+                        <p><strong>Location:</strong> ${postData.relativeLocation || 'Not specified'}</p>
+                        <p id="distanceInfo"><strong>Distance:</strong> Calculating...</p>
+                        <small>Posted by: <a href="profile_other.html?userId=${postData.userId}">${username}</a> on ${createdAt.toLocaleString()}</small>
+                        
+                        <div class="like-container" style="display: flex; align-items: center;">
+                            <button class="star-button ${postData.likes && postData.likes.includes(firebase.auth().currentUser.uid) ? 'checked' : 'unchecked'}" data-post-id="${postId}">
+                                ★
+                            </button>
+                            <span class="likeCount">${postData.likes ? postData.likes.length : 0}</span>
+                        </div>
+                    `;
+                
+                    // Add event listener for star button inside displayPost function
+                    const postStarButton = postContainer.querySelector('.star-button');
+                    const postLikeCount = postContainer.querySelector('.likeCount');
+
+                    postStarButton.addEventListener('click', () => {
+                        const userId = firebase.auth().currentUser.uid;
+
+                        // Toggle like status
+                        const isLiked = postData.likes && postData.likes.includes(userId);
+                        
+                        if (isLiked) {
+                            // Unlike the post
+                            postData.likes = postData.likes.filter(id => id !== userId);
+                            postStarButton.classList.remove('checked');
+                            postStarButton.classList.add('unchecked');
+                        } else {
+                            // Like the post
+                            postData.likes.push(userId);
+                            postStarButton.classList.remove('unchecked');
+                            postStarButton.classList.add('checked');
+                        }
+
+                        // Update like count in the UI
+                        postLikeCount.textContent = postData.likes.length;
+
+                        // Update likes in the database
+                        updatePostLikesInDatabase(postId, postData.likes);
+                    });
+
+                    // Set up the image navigation
+                    const postImage = document.getElementById('postImage');
+                    const prevImageBtn = document.getElementById('prevImageBtn');
+                    const nextImageBtn = document.getElementById('nextImageBtn');
+
+                    // Function to update the displayed image
+                    function updateImage() {
+                        if (imageUrls && imageUrls.length > 0) {
+                            postImage.src = imageUrls[currentImageIndex];
+                        }
+                    }
+
+                    // Event listeners for navigation buttons
+                    prevImageBtn.addEventListener('click', () => {
+                        currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length; // Loop back
+                        updateImage();
+                    });
+
+                    nextImageBtn.addEventListener('click', () => {
+                        currentImageIndex = (currentImageIndex + 1) % imageUrls.length; // Loop forward
+                        updateImage();
+                    });
+
+                    // Calculate distance
+                    getUserLocation().then((userLocation) => {
+                        const postCoordinates = postData.coordinates; 
+                        const distance = haversineDistance(userLocation, postCoordinates);
+                        const formattedDistance = distance.toFixed(4);
+                        document.getElementById('distanceInfo').innerHTML = `<strong>Distance:</strong> ${formattedDistance} miles away`;
+                    }).catch((error) => {
+                        console.error("Error getting user location: ", error);
+                        document.getElementById('distanceInfo').innerHTML = `<strong>Distance:</strong> Unable to determine distance`;
+                    });
+
+                    resolve();
+                }).catch((error) => {
+                    console.error("Error fetching user data: ", error);
+                    reject(error);
+                });
             } else {
-                console.error("No such document!");
+                console.error("No such document!"); 
                 document.getElementById('postContainer').innerHTML = "<p>Post not found.</p>";
+                reject(new Error("Post not found")); 
             }
         }).catch((error) => {
             console.error("Error fetching post: ", error);
             document.getElementById('postContainer').innerHTML = "<p>Error fetching post.</p>";
+            reject(error);
         });
     });
 }
 
+// Function to update post likes in Firebase
+function updatePostLikesInDatabase(postId, likes) {
+    const postRef = db.collection('post').doc(postId);
+    postRef.update({ likes: likes })
+        .then(() => console.log('Post likes updated'))
+        .catch(error => console.error('Error updating post likes:', error));
+}
+
 // Call displayPost and then fetch comments
-displayPost()
+displayPost(postId)
     .then(() => {
-        fetchComments(); // Call fetchComments after displayPost finishes
+        console.log("Post displayed successfully, fetching comments...");
+        return fetchComments();
+    })
+    .then(() => {
+        console.log("Comments fetched successfully.");
     })
     .catch((error) => {
         console.error("Error in displaying post or fetching comments: ", error);
-});
+    });
+
+
+// Call displayPost and then fetch comments
+displayPost(postId)
+    .then(() => {
+        console.log("Post displayed successfully, fetching comments...");
+        return fetchComments(); // Make sure to return the promise if fetchComments is async
+    })
+    .then(() => {
+        console.log("Comments fetched successfully.");
+    })
+    .catch((error) => {
+        console.error("Error in displaying post or fetching comments: ", error);
+    });
 
 let commentsLoaded = false; // Track if comments have been loaded
 

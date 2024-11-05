@@ -53,102 +53,89 @@ function initAutocomplete() {
     });
 }
 
-// Preview the selected image
+// Preview selected images
 postImage.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const files = event.target.files;
+    imagePreview.innerHTML = ''; // Clear previous preview content
+
+    Array.from(files).forEach(file => {
         const reader = new FileReader();
         reader.onload = function(e) {
-            imagePreview.src = e.target.result;
-            imagePreview.style.display = 'block';
+            const imgElement = document.createElement('img');
+            imgElement.src = e.target.result;
+            imgElement.style.width = '100%';
+            imgElement.style.marginTop = '10px';
+            imagePreview.appendChild(imgElement); // Add each image to preview
         };
         reader.readAsDataURL(file);
-    } else {
-        imagePreview.style.display = 'none'; // Hide preview if no file is selected
-    }
+    });
 });
 
-// Handle form submission
+// Handle form submission with multiple image uploads
 postForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
     const title = document.getElementById('postTitle').value.trim();
-    const content = document.getElementById('postContent').value; // Description can be empty
-    const relativeLocation = locationInput.value.trim(); // Get the relative location from input
-
-    // Check if title is provided
-    if (!title) {
-        alert("Please enter a title for the post.");
-        return; // Exit the function if no title is entered
-    }
-
-    // Check if an image is selected
-    if (!postImage.files.length) {
-        alert("Please select an image before creating a post.");
-        return; // Exit the function if no image is selected
-    }
-
+    const content = document.getElementById('postContent').value;
+    const relativeLocation = locationInput.value.trim();
     const createPostButton = postForm.querySelector('button[type="submit"]');
-    createPostButton.disabled = true; // Disable the button to prevent multiple submissions
+    const files = postImage.files;
+    
+    if (!title || files.length === 0) {
+        alert("Please enter a title and select at least one image.");
+        return;
+    }
 
-    const file = postImage.files[0];
-    const storageRef = firebase.storage().ref(`images/${file.name}`);
-    const uploadTask = storageRef.put(file);
+    createPostButton.disabled = true;
+    const user = firebase.auth().currentUser;
 
-    uploadTask.on('state_changed', 
-        (snapshot) => {
-            // Optional: You can add progress monitoring here if needed
-        }, 
-        (error) => {
-            console.error("Error uploading file: ", error);
-            messageDiv.textContent = "Error uploading file: " + error.message;
-            createPostButton.disabled = false; // Re-enable the button
-        }, 
-        async () => {
-            // Handle successful uploads on complete
-            try {
-                const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                const user = firebase.auth().currentUser;
+    if (!user) {
+        alert("You must be logged in to create a post.");
+        createPostButton.disabled = false;
+        return;
+    }
 
-                if (!user) {
-                    alert("You must be logged in to create a post.");
-                    createPostButton.disabled = false;
-                    return;
-                }
-
-                // Get user location
-                const userLocation = await getUserLocation();
-
-                // Save the post data to Firestore, including the image URL, user ID, and location data
-                await db.collection('post').add({
-                    title: title,
-                    content: content,
-                    imageUrl: downloadURL,
-                    likes: [], // Initialize likes array
-                    userId: user.uid, // Store user ID
-                    coordinates: {
-                        latitude: userLocation.latitude,
-                        longitude: userLocation.longitude,
-                    },
-                    relativeLocation: relativeLocation, // Save the selected relative location
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    comments: [] // Initialize empty comments array (if desired for easier retrieval)
-                });
-
-                messageDiv.textContent = "Post created successfully!";
-                postForm.reset(); // Reset the form
-                imagePreview.style.display = 'none'; // Hide the image preview
-                createPostButton.disabled = false; // Re-enable the button
-
-                // Redirect to the main page
-                window.location.href = 'index.html'; // Redirect to your main page
-            } catch (error) {
-                console.error("Error creating post: ", error);
-                messageDiv.textContent = "Error creating post: " + error.message;
-                createPostButton.disabled = false; // Re-enable the button
-            }
+    try {
+        const imageUrls = [];
+        
+        // Upload each image and store its URL in imageUrls array
+        for (const file of files) {
+            const storageRef = storage.ref(`images/${file.name}`);
+            const uploadTask = await storageRef.put(file);
+            const downloadURL = await uploadTask.ref.getDownloadURL();
+            imageUrls.push(downloadURL);
         }
-    );
+
+        // Get user location
+        const userLocation = await getUserLocation();
+
+        // Save the post data with an array of image URLs
+        await db.collection('post').add({
+            title: title,
+            content: content,
+            imageUrls: imageUrls, // Store the array of image URLs
+            likes: [],
+            userId: user.uid,
+            coordinates: {
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+            },
+            relativeLocation: relativeLocation,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            comments: []
+        });
+
+        messageDiv.textContent = "Post created successfully!";
+        postForm.reset();
+        imagePreview.innerHTML = ''; // Clear the preview area
+        createPostButton.disabled = false;
+
+        window.location.href = 'index.html'; // Redirect to main page
+    } catch (error) {
+        console.error("Error creating post: ", error);
+        messageDiv.textContent = "Error creating post: " + error.message;
+        createPostButton.disabled = false;
+    }
 });
 
 // Initialize the Google Places Autocomplete when the window loads

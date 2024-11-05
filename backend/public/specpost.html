@@ -25,6 +25,11 @@
             max-width: 800px;
             text-align: center;
         }
+        .comment-container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
         .post-image {
             width: 100%;
             height: auto;
@@ -85,6 +90,8 @@
         <img id="postImage" class="post-image" alt="Post Image">
         <h2 id="postTitle"></h2>
         <p id="postContent"></p>
+    </div>
+    <div class="post-container" id="commentContainer">
         <button id="commentButton" class="btn btn-primary">Add Comment</button>
         <div id="commentsSection" hidden>
             <form id="commentForm">
@@ -98,8 +105,8 @@
                 <button type="button" id="backButton" class="btn btn-light">Back</button>
             </form>
         </div>
-        <a href="index.html" class="btn btn-secondary">Back to Home</a>
         <div id="commentsList" class="comments-list-container"></div>
     </div>
+    <a href="index.html" id="backtoIndex" class="btn btn-light">Back To Main Menu</a>
 </body>
 </html>

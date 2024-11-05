@@ -559,7 +559,7 @@ function displayPost(postData) {
             postDiv.innerHTML = `
             <div class="card mb-4" style="position: relative;">
                 <a href="specpost.html?postId=${postData.id}">
-                    <img src="${postData.imageUrl || ''}" class="card-img-top" alt="Post Image" style="max-height: 300px; object-fit: cover;">
+                    <img src="${postData.imageUrls[0] || ''}" class="card-img-top" alt="Post Image" style="max-height: 300px; object-fit: cover;">
                 </a>
                 <div class="card-body">
                     <div class="like-container" style="display: flex; align-items: center;">
