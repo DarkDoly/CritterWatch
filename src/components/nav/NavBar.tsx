@@ -5,8 +5,9 @@ function NavBar() {
     // Clicking the icon will send you to the home page instead of having a button that useSyncExternalStore, "home".
     return <nav className='navbar bg-body-tertiary'>
         <div className='container'>
-        <img src="image they uploaded" className="img-thumbnail" alt="thumbnail"/>
-            <Link to={'/'} className='navbar-brand'>Critter Watch</Link>
+            <Link to={'/'} className='navbar-brand'>
+                <img src="/src/assets/critterwatchlogotransparentlogo.png" width={50} height={50}/> Critter Watch
+            </Link>
             <Link to={'/forum'} className='navbar-brand'>Hello</Link>
             <Link to={'/profile'} className='navbar-brand'>Profile</Link>
             <Link to={'/forgotPasswordTempA'} className='navbar-brand'>forgotPasswordTempA</Link>
