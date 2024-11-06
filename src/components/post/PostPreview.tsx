@@ -16,7 +16,7 @@ function PostPreview({id, image, liked, numberLikes, username, bodySummary} : Po
             <Link to={'/post/' + id}><img src={image} className="card-img-top" alt="" /></Link>
             <div className="card-body">
                 <PostLikeButton likedByUser={liked} numberOfLikes={numberLikes} likedHandler={() => {}}/>
-                <Link to={'/user/@' + username} className="text-dark link-underline link-underline-opacity-0"><p className="card-text fw-bold">@username</p></Link>
+                <Link to={'/user/@' + username} className="text-dark link-underline link-underline-opacity-0"><p className="card-text fw-bold">@{username}</p></Link>
                 <Link to={'/post/' + id} className="text-secondary link-underline link-underline-opacity-0"><p className="card-text">{bodySummary}</p></Link>
             </div>
         </div>
