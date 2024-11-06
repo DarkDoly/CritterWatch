@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import NavBar from "../components/nav/NavBar";
-import PostLike from "../components/post/PostLike";
+import PostLikeButton from "../components/post/PostLikeButton";
 
 function PostDetailed() {
     return <>
@@ -9,11 +9,11 @@ function PostDetailed() {
             <Link to={'/'} className="text-dark link-underline link-underline-opacity-0"><i className="bi bi-arrow-left"></i> Return</Link>
 
             <div className="row my-4">
-                <div className="col mx-5">
-                    <img src="src/assets/bug-image.jpeg" className="card-img-top" alt="" />
+                <div className="col mx-3">
+                    <img src="/src/assets/bug-image.jpeg" className="card-img-top" alt="" />
 
-                    <div className="row">
-                        <div className="col"><PostLike /></div>
+                    <div className="row mt-2">
+                        <div className="col"><PostLikeButton likedByUser={false} numberOfLikes={0} likedHandler={() => {}}/></div>
                         <div className="col"></div>
                         <div className="col text-end"><i className="bi bi-chat-left"></i> Comment</div>
                     </div>
@@ -21,7 +21,7 @@ function PostDetailed() {
 
                 <div className="col">
                     <Link to={'/user/@username'} className="text-dark link-underline link-underline-opacity-0"><p className="card-text fw-bold">@username</p></Link>
-                    <p>Baton Rouge, LA</p>
+                    <p className="text-secondary">Baton Rouge, LA</p>
                     
                     <div className="mt-4">
                         <p>Body text for your post.</p>
