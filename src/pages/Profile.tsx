@@ -14,7 +14,19 @@ const Profile = () => {
         </div>
 
         <div>
+            {/* Profile Picture */}
+            <div>
+                <img src="/docs/5.3/assets/brand/bootstrap-logo.svg" className="img-thumbnail" alt="" width="100" height="100"/>
+            </div>
 
+            {/* Uploade image Button */}
+            <div>
+                <img src="/src/assets/critterwatchlogotransparentlogo.png" className="img-thumbnail" alt="" width="100px" height="100px"/>
+                <input type="file" className="form-control" id="inputGroupFile01"/>
+            </div>
+        </div>
+
+        <div>
             {/* Username */}
             <div>
                 <p>Username</p>
@@ -35,19 +47,7 @@ const Profile = () => {
                     delectus laudantium repudiandae nesciunt consectetur id exercitationem voluptatem veniam qui quibusdam culpa ducimus mollitia ipsum!</p>
             </div>
         </div>
-
-        <div>
-            {/* Profile Picture */}
-            <div>
-                <img src="image they uploaded" className="img-thumbnail" alt="Critterwatch logo"/>
-            </div>
-
-            {/* Uploade image Button */}
-            <div>
-                <input type="file" className="form-control" id="inputGroupFile01"/>
-            </div>
-        </div>
-
+       
         {/* At the very bottom we could include links to everything unlike the navbar,
         as well as a signature from all of the developers stating we made the project. */}
     </>
