@@ -5,7 +5,7 @@ function Home() {
     return <>
         <NavBar />
         <div className="container">
-            <p className="mt-4">Viewing critters in <span className="text-decoration-underline">Baton Rouge, LA</span></p>
+            <p className="mt-4"><i className="bi bi-geo-alt-fill"></i> Viewing critters in <span className="text-decoration-underline">Baton Rouge, LA</span></p>
             <PostGrid />
         </div>
     </>
