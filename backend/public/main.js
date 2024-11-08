@@ -44,7 +44,7 @@ const forgetPasswordConfirm = document.getElementById('forgetPasswordConfirm')
 
 const userDetails = document.getElementById('userDetails');
 
-
+// Since I am doing many hidden sections in 1 file because it all appears at the main page, a lot of the functions here are just a switch flip on the hidden pages
 // Function to clear input fields
 function clearInputFields() {
     signUpEmailInput.value = '';
@@ -55,20 +55,16 @@ function clearInputFields() {
     forgetPasswordEmail.value = '';
 }
 
-// Show sign up section
+// This one is when you click the signup button from the signin page
+// signin -> signup
 signUpFromSignInBtn.onclick = () => {
     clearInputFields();  // Clear fields before showing sign-up
     signInSection.hidden = true;
     signUpSection.hidden = false;
 };
 
-backFromSignInBtn.onclick = () => {
-    clearInputFields();  // Clear fields before showing sign-up
-    signInSection.hidden = true;
-    whenSignedOut.hidden = false;
-};
-
-// Show sign in section
+// This one is when you click the back button from the signup page
+// signup -> signin
 backToSignInBtn.onclick = () => {
     clearInputFields();  // Clear fields before showing sign-in
     signUpSection.hidden = true;

@@ -66,12 +66,16 @@
 </head>
 <body>
     <h1>Critter Watch</h1>
-    
-    <!-- Main Section -->
-    <section id="whenSignedOut">
-        <button id="signinemail" class="btn btn-primary">Sign in</button>
+    <!-- Sign In Section -->
+    <section id="signInSection">
+        <h2>Sign In</h2>
+        <input type="email" id="signInEmail" placeholder="Email or Username" required />
+        <input type="password" id="signInPassword" placeholder="Password" required />
+        <button id="signInBtn" class="btn btn-primary">Sign In</button>
+        <button id="signUpFromSignInBtn" class="btn btn-secondary">Sign Up</button>
+        <button id="forgetPassword" class="btn btn-secondary">Forget Password</button>
     </section>
-
+    
     <!-- Sign Up Section -->
     <section id="signUpSection" hidden>
         <h2>Sign Up</h2>
@@ -81,17 +85,6 @@
         <input type="password" id="signUpConfirmPassword" placeholder="Confirm Password" required />
         <button id="signUpBtn" class="btn btn-primary">Sign Up</button>
         <button id="backToSignInBtn" class="btn btn-secondary">Back to Sign In</button>
-    </section>
-
-    <!-- Sign In Section -->
-    <section id="signInSection" hidden>
-        <h2>Sign In</h2>
-        <input type="email" id="signInEmail" placeholder="Email or Username" required />
-        <input type="password" id="signInPassword" placeholder="Password" required />
-        <button id="signInBtn" class="btn btn-primary">Sign In</button>
-        <button id="signUpFromSignInBtn" class="btn btn-secondary">Sign Up</button>
-        <button id="forgetPassword" class="btn btn-secondary">Forget Password</button>
-        <button id="backFromSignInBtn" class="btn btn-secondary">Back</button>
     </section>
 
     <section id="forgetPasswordSection" hidden>
