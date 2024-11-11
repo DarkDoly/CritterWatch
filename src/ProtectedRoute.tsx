@@ -30,7 +30,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   }, []);
 
   if (!authChecked) {
-    return <></>;
+    return <>Loading...</>;
   }
 
   return children;
