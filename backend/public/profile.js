@@ -1,3 +1,6 @@
+// This file and the corresponding html file is to fetch one's own post, this is different from the profile_other because you can change your 
+// username, change description and profile picture, and change your password here
+
 // Wait for the window to load
 window.addEventListener('load', () => {
     // Get references to the DOM elements

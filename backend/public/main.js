@@ -56,7 +56,7 @@ function clearInputFields() {
 }
 
 // This one is when you click the signup button from the signin page
-// signin -> signup
+// signin interface -> signup interface 
 signUpFromSignInBtn.onclick = () => {
     clearInputFields();  // Clear fields before showing sign-up
     signInSection.hidden = true;
@@ -64,7 +64,7 @@ signUpFromSignInBtn.onclick = () => {
 };
 
 // This one is when you click the back button from the signup page
-// signup -> signin
+// signup interface -> signin interface 
 backToSignInBtn.onclick = () => {
     clearInputFields();  // Clear fields before showing sign-in
     signUpSection.hidden = true;
@@ -88,45 +88,45 @@ signUpBtn.onclick = () => {
         return;
     }
 
-// Check if the username is already taken
-db.collection('user').where("UserName", "==", username).get()
-.then(querySnapshot => {
-    if (!querySnapshot.empty) {
-        alert("Username is already taken. Please choose another one.");
-        return;
-    }
+    // Check if the username is already taken
+    db.collection('user').where("UserName", "==", username).get()
+    .then(querySnapshot => {
+        if (!querySnapshot.empty) {
+            alert("Username is already taken. Please choose another one.");
+            return;
+        }
 
-    // Proceed with sign-up if the username is unique
-    auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-            console.log("Signed up:", userCredential.user);
+        // Proceed with sign-up if the username is unique
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(userCredential => {
+                console.log("Signed up:", userCredential.user);
 
-            // Create user document in Firestore
-            db.collection('user').doc(userCredential.user.uid).set({
-                UserID: userCredential.user.uid,
-                UserName: username, // Save the username
-                UserEmail: email,   // Save the user email
-                friends_ID: [],      // Initialize with an empty array of tuples
-                friends_Names: []
-            })
-            .then(() => {
-                console.log("User document created successfully.");
-                showUserDetails(userCredential.user);
+                // Create user document in Firestore
+                db.collection('user').doc(userCredential.user.uid).set({
+                    UserID: userCredential.user.uid,
+                    UserName: username, // Save the username
+                    UserEmail: email,   // Save the user email
+                    friends_ID: [],      // Initialize with an empty array of tuples
+                    friends_Names: []
+                })
+                .then(() => {
+                    console.log("User document created successfully.");
+                    showUserDetails(userCredential.user);
+                })
+                .catch(error => {
+                    console.error("Error creating user document:", error);
+                    alert(error.message);
+                });
             })
             .catch(error => {
-                console.error("Error creating user document:", error);
+                console.error("Error signing up:", error);
                 alert(error.message);
             });
         })
         .catch(error => {
-            console.error("Error signing up:", error);
-            alert(error.message);
+            console.error("Error checking username uniqueness:", error);
+            alert("Failed to check username uniqueness. Please try again.");
         });
-    })
-    .catch(error => {
-        console.error("Error checking username uniqueness:", error);
-        alert("Failed to check username uniqueness. Please try again.");
-    });
 };
 
 //Sign in event handler
@@ -171,12 +171,16 @@ signInBtn.onclick = () => {
     });
 };
 
+// This one is when you click the forget pass button from the signin page
+// signin interface  -> forget password interface 
 forgetPassword.onclick = () => {
     clearInputFields();
     signInSection.hidden = true;
     forgetPasswordSection.hidden = false;
 }
 
+//Send the reset password to the user email
+//This button is insane of the forget password section
 forgetPasswordConfirm.onclick = () => {
     const email = document.getElementById('forgetPasswordEmail').value.trim();
 
@@ -211,23 +215,18 @@ forgetPasswordConfirm.onclick = () => {
     }
 };
 
-// Show sign in section when clicking "Sign in with Email"
-document.getElementById('signinemail').onclick = () => {
-    clearInputFields();  // Clear fields before showing sign-in
-    whenSignedOut.hidden = true; // Hide main sign-out section
-    signInSection.hidden = false; // Show sign-in section
-};
-
 // Sign Out event handler
+// takes from the main interface back to the sign in interface
 signOutBtn.onclick = () => {
     auth.signOut().then(() => {
         console.log("Signed out");
         whenSignedIn.hidden = true;
-        whenSignedOut.hidden = false; // Show main sign-in section
+        signInSection.hidden = false; // Show main sign-in section
     });
 };
 
 // Show user details and switch to signed-in view
+// This is called after the user signed in or signed up
 function showUserDetails(user) {
     const userDocRef = db.collection('user').doc(user.uid);
     userDocRef.get().then(doc => {
@@ -240,7 +239,6 @@ function showUserDetails(user) {
     }).catch(error => {
         console.error("Error fetching user document:", error);
     });
-    whenSignedOut.hidden = true;
     signInSection.hidden = true;
     signUpSection.hidden = true;
     whenSignedIn.hidden = false;
@@ -447,8 +445,7 @@ document.getElementById('friends').onclick = () => {
 
 
 
-
-
+// Function to fetch all posts on the main page.
 function getPosts() {
     const postsRef = db.collection('post');
     postsRef.get().then(snapshot => {
@@ -463,7 +460,7 @@ function getPosts() {
     });
 }
 
-// Event delegation for star button clicks
+// Event for star button clicks
 document.addEventListener('click', (event) => {
     if (event.target.classList.contains('star-button')) {
         const postId = event.target.getAttribute('data-post-id');
@@ -539,6 +536,7 @@ function getUserLocation() {
 }
 
 // Function to display a single post
+// This function is called by the getallpost function for every post.
 function displayPost(postData) {
     const postsContainer = document.getElementById('postsContainer');
     const postDiv = document.createElement('div');
@@ -593,7 +591,7 @@ function displayPost(postData) {
     return postsContainer;
 }
 
-
+// Function when the my post section is clicked.
 function showMyPosts() {
     const userId = firebase.auth().currentUser.uid;
     const myPosts = currentPosts.filter(post => post.userId === userId);
@@ -643,6 +641,7 @@ document.getElementById('removePost').addEventListener('click', () => {
     });
 });
 
+// My post back to all posts
 document.getElementById('backToAllPostsBtn').addEventListener('click', () => {
     backToAllPostsBtn.hidden = true;
     document.getElementById('removePost').hidden = true; // Hide remove post button
@@ -695,6 +694,7 @@ document.getElementById('sortOptions').addEventListener('change', (event) => {
 
 let currentPosts = []; // Global array to hold all posts
 
+//Auth state for signed in and sign out.
 auth.onAuthStateChanged(user => {
     if (user) {
         showUserDetails(user);

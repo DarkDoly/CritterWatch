@@ -14,6 +14,9 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
+
+// This file is for posting a new post, the database is save in firestore and storage
+
 const db = firebase.firestore();
 const storage = firebase.storage(); // Initialize Firebase Storage
 

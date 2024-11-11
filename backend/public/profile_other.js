@@ -1,3 +1,5 @@
+// This file is to see other people profile page, use when a user click on the name of the user that post, comment, or reply to a post. 
+
 // Wait for the window to load
 window.addEventListener('load', () => {
     // Get the userId from query parameters

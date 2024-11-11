@@ -1,3 +1,6 @@
+// This file and the corresponding html file is used to show a specific post, this include comments, 
+// replies, and all of ther other chracteristic of a post
+
 if (!firebase.apps.length) {
     const firebaseConfig = {
         apiKey: "AIzaSyCFJuRK6w7ygGN2MWA7SAZWK8o4nWpX0rU",
@@ -53,6 +56,7 @@ function getUserLocation() {
     });
 }
 
+// Fucntion to display the post having post_ID as the param.
 function displayPost(postId) {
     return new Promise((resolve, reject) => {
         const postRef = db.collection('post').doc(postId);
