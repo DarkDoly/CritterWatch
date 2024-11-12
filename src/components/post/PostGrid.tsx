@@ -9,7 +9,7 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import { auth, db } from "../../Firebase";
+import { db } from "../../Firebase";
 
 function PostGrid() {
   const [posts, setPosts] = useState<DocumentData[]>([]);
@@ -23,7 +23,7 @@ function PostGrid() {
   };
 
   useEffect(() => {
-    console.log("Loading posts: " + pagination);
+    console.log("Loading posts on page " + pagination);
 
     const postsRef = collection(db, "post");
 
@@ -61,8 +61,7 @@ function PostGrid() {
       <PostPreview
         id={post.id}
         image={post.imageUrls[0]}
-        liked={post.likes.includes(auth.currentUser?.uid)}
-        numberLikes={post.likes.length}
+        likes={post.likes}
         user={post.userId}
         bodySummary={post.content}
         key={post.id}
