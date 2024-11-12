@@ -1,8 +1,71 @@
-import { Link } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import NavBar from "../components/nav/NavBar";
 import PostLikeButton from "../components/post/PostLikeButton";
+import { useEffect, useState } from "react";
+import { doc, DocumentData, onSnapshot, updateDoc } from "firebase/firestore";
+import { auth, db } from "../Firebase";
+import PostImageCarousel from "../components/post/PostImageCarousel";
 
 function PostDetailed() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [postData, setPostData] = useState<DocumentData | undefined>(undefined);
+  const [username, setUsername] = useState("");
+  const [postLikes, setPostLikes] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!id) {
+      console.log("Invalid post id");
+
+      navigate("/");
+
+      return;
+    }
+
+    console.log("Fetching post data");
+
+    onSnapshot(doc(db, "post", id), (doc) => {
+      setPostData(doc.data());
+      setPostLikes(doc.data()?.likes);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!postData) return;
+
+    onSnapshot(doc(db, "user", postData.userId), (doc) => {
+      setUsername(doc.data()?.UserName);
+    });
+  }, [postData]);
+
+  const handleLiked = () => {
+    if (!auth.currentUser || !id) return;
+
+    const likedByUser = auth.currentUser
+      ? postLikes.includes(auth.currentUser.uid)
+      : false;
+
+    let newLikes: string[];
+
+    if (likedByUser) {
+      newLikes = [];
+
+      postLikes.forEach((like) => {
+        if (like != auth.currentUser?.uid) {
+          newLikes.push(like);
+        }
+      });
+    } else {
+      newLikes = [...postLikes];
+      newLikes.push(auth.currentUser.uid);
+    }
+
+    setPostLikes(newLikes);
+
+    updateDoc(doc(db, "post", id), { likes: newLikes });
+  };
+
   return (
     <>
       <NavBar />
@@ -16,18 +79,20 @@ function PostDetailed() {
 
         <div className="row my-4">
           <div className="col mx-3">
-            <img
-              src="/src/assets/bug-image.jpeg"
-              className="card-img-top"
-              alt=""
+            <PostImageCarousel
+              imageUrls={postData?.imageUrls ? postData.imageUrls : []}
             />
 
             <div className="row mt-2">
               <div className="col">
                 <PostLikeButton
-                  likedByUser={false}
-                  numberOfLikes={0}
-                  likedHandler={() => {}}
+                  likedByUser={
+                    auth.currentUser
+                      ? postLikes.includes(auth.currentUser?.uid)
+                      : false
+                  }
+                  numberOfLikes={postLikes.length}
+                  likedHandler={handleLiked}
                 />
               </div>
               <div className="col"></div>
@@ -42,23 +107,12 @@ function PostDetailed() {
               to={"/user/@username"}
               className="text-dark link-underline link-underline-opacity-0"
             >
-              <p className="card-text fw-bold">@username</p>
+              <p className="card-text fw-bold">@{username}</p>
             </Link>
-            <p className="text-secondary">Baton Rouge, LA</p>
+            <p className="text-secondary">{postData?.relativeLocation}</p>
 
             <div className="mt-4">
-              <p>Body text for your post.</p>
-              <p>
-                Excepteur efficient emerging, minim veniam anim aute carefully
-                curated Ginza conversation exquisite perfect nostrud nisi
-                intricate Content. Qui international first-class nulla ut.
-                Punctual adipisicing, essential lovely queen tempor eiusmod
-                irure. Exclusive izakaya charming Scandinavian impeccable aute
-                quality of life soft power pariatur Melbourne occaecat
-                discerning. Qui wardrobe aliquip, et Porter destination Toto
-                remarkable officia Helsinki excepteur Basset hound. Zürich
-                sleepy perfect consectetur.
-              </p>
+              <p>{postData?.content}</p>
             </div>
           </div>
         </div>

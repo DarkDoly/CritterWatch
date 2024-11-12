@@ -63,7 +63,11 @@ function PostGrid() {
         image={post.imageUrls[0]}
         likes={post.likes}
         user={post.userId}
-        bodySummary={post.content}
+        bodySummary={
+          post.content.length > 75
+            ? post.content.slice(0, 75) + "..."
+            : post.content
+        }
         key={post.id}
       />
     );
