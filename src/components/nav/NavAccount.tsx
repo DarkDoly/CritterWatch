@@ -7,9 +7,16 @@ function NavAccount() {
 
   if (userData) {
     return (
-      <Link to={"/profile"} className="text-dark">
-        {userData?.UserEmail}
-      </Link>
+      <div>
+        <Link to={"/create"}>
+          <button type="button" className="btn btn-dark mx-3">
+            Create Post
+          </button>
+        </Link>
+        <Link to={"/profile"} className="text-dark">
+          {userData?.UserEmail}
+        </Link>
+      </div>
     );
   }
 
