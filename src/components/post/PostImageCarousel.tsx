@@ -23,18 +23,17 @@ function PostImageCarousel({ imageUrls }: PostImageCarouselProps) {
     }
   };
 
-  console.log(currentImage);
   return (
-    <div>
+    <div className="my-2">
       <img src={imageUrls[currentImage]} className="card-img-top" alt="" />
       <div className="text-center">
-        <button className="btn" onClick={showPrevious}>
+        <button className="btn me-2" onClick={showPrevious}>
           Previous
         </button>
         <span>
-          | {currentImage + 1} / {imageUrls.length} |
+          {currentImage + 1} | {imageUrls.length}
         </span>
-        <button className="btn" onClick={showNext}>
+        <button className="btn ms-2" onClick={showNext}>
           Next
         </button>
       </div>

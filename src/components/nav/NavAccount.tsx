@@ -13,7 +13,7 @@ function NavAccount() {
             Create Post
           </button>
         </Link>
-        <Link to={"/profile"} className="text-dark">
+        <Link to={"/user/@" + userData?.UserName} className="text-dark">
           {userData?.UserEmail}
         </Link>
       </div>
