@@ -53,6 +53,7 @@ function PostDetailed() {
       snapshot.forEach((doc) => {
         const commentData = doc.data();
         commentData.id = doc.id;
+        commentData.postId = id;
 
         c.push(commentData);
       });
