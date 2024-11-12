@@ -14,7 +14,7 @@ function NavAccount() {
           </button>
         </Link>
         <Link to={"/user/@" + userData?.UserName} className="text-dark">
-          {userData?.UserEmail}
+          @{userData?.UserName}
         </Link>
       </div>
     );

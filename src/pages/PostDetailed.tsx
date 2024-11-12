@@ -3,11 +3,15 @@ import NavBar from "../components/nav/NavBar";
 import PostLikeButton from "../components/post/PostLikeButton";
 import { useEffect, useState } from "react";
 import {
+  addDoc,
   collection,
   doc,
   DocumentData,
   getDocs,
   onSnapshot,
+  orderBy,
+  query,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "../Firebase";
@@ -22,6 +26,7 @@ function PostDetailed() {
   const [username, setUsername] = useState("");
   const [postLikes, setPostLikes] = useState<string[]>([]);
   const [comments, setComments] = useState<DocumentData[]>([]);
+  const [commentInput, setCommentInput] = useState("");
 
   useEffect(() => {
     if (!id) {
@@ -47,7 +52,12 @@ function PostDetailed() {
       setUsername(doc.data()?.UserName);
     });
 
-    getDocs(collection(db, "post/" + id + "/comments")).then((snapshot) => {
+    const q = query(
+      collection(db, "post/" + id + "/comments"),
+      orderBy("createdAt", "asc")
+    );
+
+    getDocs(q).then((snapshot) => {
       const c: DocumentData[] = [];
 
       snapshot.forEach((doc) => {
@@ -93,10 +103,37 @@ function PostDetailed() {
     return <PostComment commentData={comment} key={comment.id} />;
   });
 
+  const handleComment = () => {
+    if (commentInput.trim() === "") {
+      return;
+    }
+
+    addDoc(collection(db, "post/" + id + "/comments"), {
+      content: commentInput,
+      createdAt: Timestamp.now(),
+      likes: [],
+      userId: auth.currentUser?.uid,
+    }).then((doc) => {
+      const newComments = [...comments];
+
+      newComments.push({
+        content: commentInput,
+        createdAt: Timestamp.now(),
+        likes: [],
+        userId: auth.currentUser?.uid,
+        id: doc.id,
+      });
+
+      setComments(newComments);
+    });
+
+    setCommentInput("");
+  };
+
   return (
     <>
       <NavBar />
-      <div className="container mt-3">
+      <div className="container my-3">
         <Link
           to={"/"}
           className="text-dark link-underline link-underline-opacity-0"
@@ -104,7 +141,7 @@ function PostDetailed() {
           <i className="bi bi-arrow-left"></i> Return
         </Link>
 
-        <div className="row my-4">
+        <div className="row mt-4">
           <div className="col mx-3">
             <PostLikeButton
               likedByUser={
@@ -138,7 +175,27 @@ function PostDetailed() {
           </div>
         </div>
 
-        <div>{commentSection}</div>
+        <div>
+          {commentSection}
+          <div className="my-2">
+            <textarea
+              className="form-control"
+              id="commentInput"
+              rows={3}
+              value={commentInput}
+              onChange={(event) => {
+                setCommentInput(event.target.value);
+              }}
+            />
+          </div>
+          <button
+            type="button"
+            className="btn btn-dark mb-4 mt-2"
+            onClick={handleComment}
+          >
+            <i className="bi bi-chat-left"></i> Comment
+          </button>
+        </div>
       </div>
     </>
   );

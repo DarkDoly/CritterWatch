@@ -4,6 +4,8 @@ import {
   DocumentData,
   getDocs,
   onSnapshot,
+  orderBy,
+  query,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -25,7 +27,7 @@ function PostComment({ commentData }: PostCommentProps) {
       setProfileUrl(doc.data()?.UserImage);
     });
 
-    getDocs(
+    const q = query(
       collection(
         db,
         "post/" +
@@ -33,8 +35,11 @@ function PostComment({ commentData }: PostCommentProps) {
           "/comments/" +
           commentData.id +
           "/replies"
-      )
-    ).then((snapshot) => {
+      ),
+      orderBy("createdAt", "asc")
+    );
+
+    getDocs(q).then((snapshot) => {
       const r: DocumentData[] = [];
 
       snapshot.forEach((doc) => {
