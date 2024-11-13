@@ -6,16 +6,13 @@ import NavBar from "../components/nav/NavBar"
 const ForgotPasswordPartA = () => {
     return<>
         <NavBar />
-            <div>
+            <div className="container-sm border border-primary">
                 <div>
-                    <p>Please type in a new password.
+                    <p>Please type in your email.
                     </p>
                 </div>
                 <div>
-                    <input type="password" id="inputPassword5" className="form-control" aria-describedby="passwordHelpBlock"/>
-                        <div id="passwordHelpBlock" className="form-text">
-                            Your password must be 6 characters long.
-                        </div>
+                    <input type="email" id="exampleFormControlInput1" className="form-control" placeholder="name@example.com"/>
                 </div>
             </div>
     </>

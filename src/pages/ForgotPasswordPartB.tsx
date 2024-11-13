@@ -7,7 +7,7 @@ import NavBar from "../components/nav/NavBar"
 const ForgotPasswordPartB = () => {
     return<>
         <NavBar />
-            <div>
+            <div className="border border-secondary">
                 <div>
                     <p>Please type in a new password.
                     </p>
