@@ -40,6 +40,8 @@ function PostDetailed() {
     console.log("Fetching post data " + id);
 
     onSnapshot(doc(db, "post", id), (doc) => {
+      if (!doc.exists()) navigate("/");
+
       setPostData(doc.data());
       setPostLikes(doc.data()?.likes);
     });

@@ -37,7 +37,7 @@ function SignInForm({ onSubmit }: SignInFormProps) {
       </div>
       <button
         type="submit"
-        className="btn btn-dark"
+        className="btn btn-dark w-100"
         onClick={(e) => {
           e.preventDefault();
 

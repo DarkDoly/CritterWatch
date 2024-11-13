@@ -34,10 +34,10 @@ function PostGrid() {
         postsRef,
         orderBy("createdAt", "desc"),
         startAfter(lastPostFetched),
-        limit(12)
+        limit(9)
       );
     } else {
-      q = query(postsRef, orderBy("createdAt", "desc"), limit(12));
+      q = query(postsRef, orderBy("createdAt", "desc"), limit(9));
     }
 
     getDocs(q).then((snapshot) => {

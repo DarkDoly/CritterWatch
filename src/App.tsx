@@ -4,6 +4,7 @@ import PostDetailed from "./pages/PostDetailed";
 import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./ProtectedRoute";
 import CreatePost from "./pages/CreatePost";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         }
       />
       <Route path="/signin" element={<SignIn />} />
+      <Route path="/register" element={<Register />} />
     </Routes>
   );
 }
