@@ -68,12 +68,22 @@ function PostComment({ commentData }: PostCommentProps) {
       return;
     }
 
-    addDoc(collection(db, "post/" + commentData.postId + "/comments/" + commentData.id + "/replies"), {
-      content: replyInput,
-      createdAt: Timestamp.now(),
-      likes: [],
-      userId: auth.currentUser?.uid,
-    }).then((doc) => {
+    addDoc(
+      collection(
+        db,
+        "post/" +
+          commentData.postId +
+          "/comments/" +
+          commentData.id +
+          "/replies"
+      ),
+      {
+        content: replyInput,
+        createdAt: Timestamp.now(),
+        likes: [],
+        userId: auth.currentUser?.uid,
+      }
+    ).then((doc) => {
       const newReplies = [...replies];
 
       newReplies.push({
@@ -89,7 +99,7 @@ function PostComment({ commentData }: PostCommentProps) {
 
     setReplyInput("");
     setShowReplyInput(false);
-  }
+  };
 
   return (
     <div className="mb-4">
@@ -112,7 +122,9 @@ function PostComment({ commentData }: PostCommentProps) {
         {commentData.createdAt.toDate().toLocaleString()}
       </p>
       <p className="mb-2">{commentData.content}</p>
-      {showReplyInput ? <div><div className="my-2">
+      {showReplyInput ? (
+        <div>
+          <div className="my-2">
             <textarea
               className="form-control"
               id="replyInput"
@@ -130,12 +142,26 @@ function PostComment({ commentData }: PostCommentProps) {
           >
             <i className="bi bi-chat-left"></i> Reply
           </button>
-          <button className="btn mb-4 mt-2" onClick={() => {setShowReplyInput(false); setReplyInput("");}}>Cancel</button>
-          </div> : <button className="btn text-dark text-decoration-underline px-0" onClick={() => {
-        setShowReplyInput(true)
-      }}>
-        Reply
-      </button>}
+          <button
+            className="btn mb-4 mt-2"
+            onClick={() => {
+              setShowReplyInput(false);
+              setReplyInput("");
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <button
+          className="btn text-dark text-decoration-underline px-0"
+          onClick={() => {
+            setShowReplyInput(true);
+          }}
+        >
+          Reply
+        </button>
+      )}
 
       <div>{repliesSection}</div>
     </div>
