@@ -5,11 +5,11 @@ import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./ProtectedRoute";
 import CreatePost from "./pages/CreatePost";
 import Register from "./pages/Register";
-import ForgotPasswordPartA from "./pages/ForgotPasswordPartA"
-import ForgotPasswordPartB from "./pages/ForgotPasswordPartB"
-import Profile from "./pages/Profile"
+import ForgotPasswordPartA from "./pages/ForgotPasswordPartA";
+import ForgotPasswordPartB from "./pages/ForgotPasswordPartB";
+import Profile from "./pages/Profile";
 
-export default function App() {
+function App() {
   return (
     <Routes>
       <Route
