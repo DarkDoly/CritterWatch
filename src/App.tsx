@@ -5,8 +5,11 @@ import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./ProtectedRoute";
 import CreatePost from "./pages/CreatePost";
 import Register from "./pages/Register";
+import ForgotPasswordPartA from "./pages/ForgotPasswordPartA"
+import ForgotPasswordPartB from "./pages/ForgotPasswordPartB"
+import Profile from "./pages/Profile"
 
-function App() {
+export default function App() {
   return (
     <Routes>
       <Route
@@ -35,6 +38,9 @@ function App() {
       />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgotPasswordTempA" element={<ForgotPasswordPartA />} />
+      <Route path="/forgotPasswordTempB" element={<ForgotPasswordPartB />} />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
   );
 }
