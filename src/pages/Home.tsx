@@ -1,18 +1,19 @@
 import NavBar from "../components/nav/NavBar";
+import PostGrid from "../components/post/PostGrid";
 
-const Home = () => {
-    return <>
-
-        {/* Displays the Navbar */}
-        <NavBar />
-
-        <div className="container">
-            <p>Lots of animal posts</p>
-        </div>
-
-        {/* At the very bottom we could include links to everything unlike the navbar,
-        as well as a signature from all of the developers stating we made the project. */}
+function Home() {
+  return (
+    <>
+      <NavBar />
+      <div className="container">
+        <p className="mt-4">
+          <i className="bi bi-geo-alt-fill"></i> Viewing critters within{" "}
+          <span className="text-decoration-underline">15 miles</span>
+        </p>
+        <PostGrid />
+      </div>
     </>
+  );
 }
 
 export default Home;
