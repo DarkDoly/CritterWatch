@@ -112,7 +112,7 @@ function PostComment({ commentData }: PostCommentProps) {
             src={profileUrl}
             height={"50px"}
             width={"50px"}
-            className="rounded-circle me-2"
+            className="rounded-circle me-2 object-fit-cover"
             alt=""
           />
         )}

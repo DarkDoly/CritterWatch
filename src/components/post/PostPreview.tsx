@@ -59,7 +59,12 @@ function PostPreview({
     <div className="col-4">
       <div className="card my-4">
         <Link to={"/post/" + id}>
-          <img src={image} className="card-img-top" alt="" height={"300px"} />
+          <img
+            src={image}
+            className="card-img-top object-fit-cover"
+            alt=""
+            height={"300px"}
+          />
         </Link>
         <div className="card-body">
           <PostLikeButton
