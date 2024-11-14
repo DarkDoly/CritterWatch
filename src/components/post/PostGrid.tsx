@@ -65,7 +65,7 @@ function PostGrid() {
         user={post.userId}
         bodySummary={
           post.content.length > 75
-            ? post.content.slice(0, 75) + "..."
+            ? post.content.slice(0, 75).trim() + "..."
             : post.content
         }
         key={post.id}
