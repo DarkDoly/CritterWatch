@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import ForgotPasswordPartA from "./pages/ForgotPasswordPartA";
 import ForgotPasswordPartB from "./pages/ForgotPasswordPartB";
 import Profile from "./pages/Profile";
+import ChatFriendPage from "./pages/ChatFriendPage";
 
 function App() {
   return (
@@ -40,7 +41,8 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/forgotPasswordTempA" element={<ForgotPasswordPartA />} />
       <Route path="/forgotPasswordTempB" element={<ForgotPasswordPartB />} />
-      <Route path="/profile" element={<Profile />} />
+      <Route path="/Profile" element={<Profile />} />
+      <Route path="/Friends" element ={<ChatFriendPage />} />
     </Routes>
   );
 }

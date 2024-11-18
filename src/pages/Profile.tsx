@@ -2,6 +2,7 @@
 // here they will also be able to customize their profile
 
 import NavBar from "../components/nav/NavBar";
+import PostGrid from "../components/post/PostGrid";
 
 const Profile = () => {
     return <>
@@ -62,7 +63,7 @@ const Profile = () => {
         </div>
 
         {/* Bottom Side */}
-        <div className="border border-secondary" style={{height: '50vh'}}>
+        <div className="border border-secondary" style={{height: '5vh'}}>
 
             {/* Grid Swap Buttons */}
             <div className="btn-group" role="group" aria-label="Grid Swap Buttons">
@@ -76,9 +77,11 @@ const Profile = () => {
                 <label className="btn btn-outline-dark" htmlFor="btnradio2">Liked Posts</label>
             </div>
         </div>
-
         
-       
+        {/* Displays the temporary Post Grid */}
+        <div className="container justify-content-center border border-warning">
+            <PostGrid />
+        </div>
         {/* At the very bottom we could include links to everything unlike the navbar,
         as well as a signature from all of the developers stating we made the project. */}
     </>
