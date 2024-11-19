@@ -106,8 +106,7 @@ signUpBtn.onclick = () => {
                     UserID: userCredential.user.uid,
                     UserName: username, // Save the username
                     UserEmail: email,   // Save the user email
-                    friends_ID: [],      // Initialize with an empty array of tuples
-                    friends_Names: []
+                    friends_ID: []    // Initialize with an empty array of tuples
                 })
                 .then(() => {
                     console.log("User document created successfully.");
@@ -272,15 +271,12 @@ function addFriend(friendEmail) {
                 if (!snapshot.empty) {
                     snapshot.forEach(doc => {
                         const friendId = doc.id; // Get the friend's ID
-                        const friendName = doc.data().UserName; // Get the friend's username
 
                         // Update the user's document with the new friend's details
                         db.collection('user').doc(user.uid).update({
-                            friends_ID: firebase.firestore.FieldValue.arrayUnion(friendId), // Add friend ID
-                            friends_Names: firebase.firestore.FieldValue.arrayUnion(friendName) // Add friend's username
+                            friends_ID: firebase.firestore.FieldValue.arrayUnion(friendId) // Add friend ID
                         })
                         .then(() => {
-                            console.log("Friend added:", friendName);
                             getFriends(); // Refresh the friends list
                         })
                         .catch(error => {
@@ -369,18 +365,6 @@ function displayFriends(friends) {
             }
         };
 
-        // Create a button for messaging the friend
-        const messageButton = document.createElement('button');
-        messageButton.className = 'btn btn-primary btn-sm float-right mr-2';
-        messageButton.textContent = 'Message';
-
-        // Add click event to navigate to the message page
-        messageButton.onclick = () => {
-            window.location.href = 'message.html'; // Redirect to message page
-        };
-
-        // Append the buttons to the list item
-        listItem.appendChild(messageButton);
         listItem.appendChild(removeButton);
         friendsList.appendChild(listItem);
     });
@@ -393,12 +377,9 @@ function removeFriend(friendId) {
         // Get the friend's document to retrieve their username
         db.collection('user').doc(friendId).get().then(doc => {
             if (doc.exists) {
-                const friendName = doc.data().UserName; // Get the friend's username
-                
                 // Update the user's document to remove the friend ID and name
                 db.collection('user').doc(user.uid).update({
-                    friends_ID: firebase.firestore.FieldValue.arrayRemove(friendId),
-                    friends_Names: firebase.firestore.FieldValue.arrayRemove(friendName)
+                    friends_ID: firebase.firestore.FieldValue.arrayRemove(friendId)
                 })
                 .then(() => {
                     console.log("Friend removed:", friendId);
@@ -598,6 +579,9 @@ function showMyPosts() {
     const postsContainer = document.getElementById('postsContainer');
     postsContainer.innerHTML = '';
 
+    document.getElementById('distanceFilter').hidden = true;
+    document.getElementById('timeFilter').hidden = true;
+    document.getElementById('likesFilter').hidden = true;
     document.getElementById('backToAllPostsBtn').hidden = false;
     document.getElementById('removePost').hidden = false;
     document.getElementById('myPost').hidden = true;
@@ -646,6 +630,9 @@ document.getElementById('backToAllPostsBtn').addEventListener('click', () => {
     backToAllPostsBtn.hidden = true;
     document.getElementById('removePost').hidden = true; // Hide remove post button
     document.getElementById('myPost').hidden = false; // Show "My Posts" button
+    document.getElementById('distanceFilter').hidden = false;
+    document.getElementById('timeFilter').hidden = false;
+    document.getElementById('likesFilter').hidden = false;
     getPosts(); // Fetch and display all posts again
 });
 
@@ -667,30 +654,79 @@ function deletePost(postId) {
 // Existing code for My Posts button
 document.getElementById('myPost').addEventListener('click', showMyPosts);
 
-// Sort posts by likes or creation date
+// Function to fetch all posts on the main page.
+function getPosts() {
+    const postsRef = db.collection('post');
+    const distanceFilter = parseInt(document.getElementById('distanceFilter').value); // Distance filter
+    const timeFilter = document.getElementById('timeFilter').value; // Time filter (e.g., past 24 hours)
+    const likesFilter = document.getElementById('likesFilter').value; // Likes filter (least or most liked)
+
+    // Get the user's location
+    getUserLocation().then((userLocation) => {
+        postsRef.get().then(snapshot => {
+            currentPosts = []; // Clear previous posts
+
+            snapshot.forEach(doc => {
+                const postData = { id: doc.id, ...doc.data() }; // Include doc ID
+
+                // Distance filter logic
+                const postCoordinates = postData.coordinates || { latitude: 0, longitude: 0 };
+                const distance = haversineDistance(userLocation, postCoordinates);
+
+                if (distance <= distanceFilter) {
+                    // Time filter logic (based on createdAt)
+                    const now = Date.now();
+                    const postTime = postData.createdAt ? postData.createdAt.seconds * 1000 : 0; // Firestore timestamp to JS date
+                    let timeValid = true;
+
+                    if (timeFilter !== 'all') {
+                        const timeDifference = now - postTime;
+                        const timeLimit = timeFilter * 60 * 60 * 1000; // Convert hours to milliseconds
+                        if (timeDifference > timeLimit) {
+                            timeValid = false;
+                        }
+                    }
+
+                    if (timeValid) {
+                        currentPosts.push(postData); // Store post if it passes distance and time filter
+                    }
+                }
+            });
+
+            // Now, sort and display posts
+            sortPosts(likesFilter, 'desc'); // Default: sort by most liked
+            displaySortedPosts();
+        }).catch(error => {
+            console.error("Error fetching posts: ", error);
+        });
+    });
+}
+
+// Event listener for sort options (distance, time, likes)
+document.getElementById('distanceFilter').addEventListener('change', getPosts);
+document.getElementById('timeFilter').addEventListener('change', getPosts);
+document.getElementById('likesFilter').addEventListener('change', getPosts);
+
+// Function to sort posts based on likes or creation date
 function sortPosts(criteria, order) {
-    if (criteria === 'likes') {
+    if (criteria === 'most') {
         currentPosts.sort((a, b) => (order === 'asc' ? a.likes.length - b.likes.length : b.likes.length - a.likes.length));
+    } else if (criteria === 'least') {
+        currentPosts.sort((a, b) => (order === 'asc' ? b.likes.length - a.likes.length : a.likes.length - b.likes.length));
     } else if (criteria === 'date') {
         currentPosts.sort((a, b) => (order === 'asc' ? a.createdAt.seconds - b.createdAt.seconds : b.createdAt.seconds - a.createdAt.seconds));
     }
-    displaySortedPosts();
 }
 
-// Display sorted posts
+// Function to display sorted posts
 function displaySortedPosts() {
     const postsContainer = document.getElementById('postsContainer');
     postsContainer.innerHTML = ''; // Clear previous posts
+
     currentPosts.forEach(postData => {
         displayPost(postData); // Re-display posts in sorted order
     });
 }
-
-// Event listener for sort options
-document.getElementById('sortOptions').addEventListener('change', (event) => {
-    const [criteria, order] = event.target.value.split('-');
-    sortPosts(criteria, order);
-});
 
 let currentPosts = []; // Global array to hold all posts
 
@@ -700,9 +736,9 @@ auth.onAuthStateChanged(user => {
         showUserDetails(user);
         getPosts(); // Fetch and display posts if signed in
         whenSignedIn.hidden = false;
-        whenSignedOut.hidden = true; // Hide sign-in section
+        signInSection.hidden = true; // Hide sign-in section
     } else {
         whenSignedIn.hidden = true;
-        whenSignedOut.hidden = false; // Show main sign-in section
+        signInSection.hidden = false; // Show main sign-in section
     }
 });

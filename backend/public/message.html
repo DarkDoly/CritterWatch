@@ -3,11 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Message Page</title>
+    <script defer src="/__/firebase/10.14.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/10.14.0/firebase-storage-compat.js"></script>
+    <script src="message.js" defer></script>
+    <title>Message App</title>
 </head>
+
 <body>
     <h1>Hello World</h1>
     <p>This is the message page!</p>
+
+    <div>
+        <h2>Your Friends</h2>
+        <div id="friends-list">
+            <!-- Friends will be dynamically inserted here -->
+        </div>
+    </div>
+
     <button onclick="window.history.back();">Go Back</button>
+
+    <div id="chat-box" hidden>
+        <div id="chat-header"></div>
+        <div id="chat-messages"></div>
+        <div>
+            <input type="text" id="message-input" placeholder="Type a message" required>
+            <input type="file" id="image-input" accept="image/*">  <!-- Image upload field -->
+            <button id="send-btn">Send</button>
+        </div>
+    </div>    
 </body>
 </html>

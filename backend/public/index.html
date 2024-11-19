@@ -105,17 +105,33 @@
         <!-- Posts Section -->
         <h2>Newest Posts</h2>
         <div class="form-group">
-            <label for="sortOptions">Sort By:</label>
-            <select id="sortOptions" class="form-control">
-                <option value="likes-asc">Likes (Least to Most)</option>
-                <option value="likes-desc">Likes (Most to Least)</option>
-                <option value="date-asc">Date (Oldest to Newest)</option>
-                <option value="date-desc">Date (Newest to Oldest)</option>
+            <!-- Distance Filter -->
+            <select id="distanceFilter">
+                <option value="1">1 mile</option>
+                <option value="5">5 miles</option>
+                <option value="10" selected>10 miles</option>
+                <option value="20">20 miles</option>
+                <option value="10000">All</option>
             </select>
-            <button id="myPost" class="btn btn-primary mt-2">My Post</button>
-            <button id="removePost" class="btn btn-primary mt-2"hidden>Remove Your Posts</button>
-            <button id="backToAllPostsBtn" class="btn btn-primary mt-2" hidden>Back to All Posts</button>
+
+            <!-- Time Filter -->
+            <select id="timeFilter">
+                <option value="24">Past 24 hours</option>
+                <option value="168">Past week</option>
+                <option value="720">Past month</option>
+                <option value="8760">Past year</option>
+                <option value="all" selected>All time</option>
+            </select>
+
+            <!-- Likes Filter -->
+            <select id="likesFilter">
+                <option value="least">Least liked</option>
+                <option value="most" selected>Most liked</option>
+            </select>
         </div>
+        <button id="myPost" class="btn btn-primary mt-2">My Post</button>
+        <button id="removePost" class="btn btn-primary mt-2"hidden>Remove Your Posts</button>
+        <button id="backToAllPostsBtn" class="btn btn-primary mt-2" hidden>Back to All Posts</button>
         <div class="container">
             <div class="row" id="postsContainer"></div>
         </div>
@@ -124,6 +140,7 @@
     <section id="friendsSection" hidden>
       <h2>Your Friends</h2>
       <ul id="friendsList" class="list-group"></ul>
+      <a href="message.html" class="btn btn-secondary">Message</a>
       <button id="addFriendBtn" class="btn btn-secondary">Add Friend</button>
       <button id="backFromFriendsSection" class="btn btn-secondary">Back</button>
     </section>
