@@ -125,7 +125,6 @@ postForm.addEventListener('submit', async (event) => {
             },
             relativeLocation: relativeLocation,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            comments: []
         });
 
         messageDiv.textContent = "Post created successfully!";

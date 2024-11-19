@@ -543,7 +543,7 @@ function displayPost(postData) {
     postDiv.className = 'col-md-4';
 
     getUserLocation().then((userLocation) => {
-        const postCoordinates = postData.coordinates;
+        const postCoordinates = postData.coordinates || { latitude: 0, longitude: 0 };
         const distance = haversineDistance(userLocation, postCoordinates);
         const formattedDistance = distance.toFixed(4);
 
