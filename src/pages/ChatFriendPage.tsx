@@ -1,6 +1,7 @@
 //This is the page where you can interact and chat with your friends
 
 import NavBar from "../components/nav/NavBar"
+import SelectableChat from "../components/friend/SelectableChat"
 
 function ChatFriendPage () {
     return (
@@ -11,46 +12,37 @@ function ChatFriendPage () {
 
                 {/* Left-side Friends */}
                 <div className="border border-secondary h-auto w-25">
-
-                    {/* Chat bubble for a friend */}
-                    <div className="border border-dark-subtle w-auto d-flex flex-row border-2 border-top-0" style ={{height: "12vh"}}>
-
-                        {/* Image section */}
-                        <div className="border border-info">
-                            <img className="rounded-circle sm ms-2 mt-2" alt="Friend Profile Image" src="src\assets\bug-image.jpeg" style={{display: "block", maxWidth: "85%", height: "85%"}}/>
-                        </div>
-
-                        {/* Name and recent message section */}
-                        <div className="border border-success w-75 mt-1 ms-1 d-flex flex-column justify-content-between">
-
-                            {/* Name stuff */}
-                            <div className="border border-dark d-flex flex-row">
-                                <p className="fs-5 fw-semibold">DarkDoly</p>
-                                <p className="fs-6 text-secondary mt-2">@smalltext</p>
-                            </div>
-
-                            {/* Recent Message Section */}
-                            <div className="border border-danger">
-                                <p className="d-inline-block text-truncate" style={{maxWidth: "30vh"}}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ex vero maiores doloremque reiciendis dolore praesentium autem quas beatae quis consequuntur.</p>
-                            </div>
-                        </div>
-                    </div>
+                    <SelectableChat/>
+                    <SelectableChat/>
+                    <SelectableChat/>
                 </div>
 
                 {/* Right side chat feature */}
-                <div className="border border-danger w-75 d-flex flex-column justify-content-between" style={{maxWidth: "100%"}}>
+                <div className="border border-danger w-75 d-flex flex-column" style={{maxWidth: "100%"}}>
 
                     {/* Text Bubbles */}
-                    <div className="border border-primary">
-                        <p>hi</p>
+                    <div className="border border-primary h-100 d-flex flex-column-reverse">
+                        {/* Left-Side Bubbles */}
+                        <div className="border border-danger d-flex flex-column" style={{width: "100%"}}>
+                            <div className= "border border-success mt-5">
+                                <div className="d-inline-flex bg-warning-subtle ms-3 p-1 rounded" style={{maxWidth: "65vh"}}>
+                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ducimus exercitationem deserunt fuga numquam officia sunt assumenda repellendus reprehenderit voluptate cum.
+                                </div>
+                            </div>
+                            <div className= "border border-danger d-flex align-items-end mt-5">
+                                <div className="borderd-inline-flex ms-auto bg-success-subtle me-3 p-1 rounded" style={{maxWidth: "65vh"}}>
+                                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui impedit architecto quod repudiandae? Ipsam, possimus recusandae eveniet provident repellendus tempore, necessitatibus doloremque nesciunt molestiae quo neque eaque laborum, ex labore porro at consequatur placeat quaerat blanditiis quasi voluptatem. Voluptate, laboriosam molestias! Rem, dignissimos saepe praesentium vel id ex ipsa voluptate.
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Chat Input Section */}
-                    <div className="border border-info d-flex flex-row justify-content-between mx-4">
+                    <div className="border border-info d-flex flex-row justify-content-between mx-5">
 
                         {/* Input area */}
-                        <div className="bg-secondary-subtle rounded w-75">
-                            <p className="fs-5 text-center">Lorem ipsum dolor sit amet.</p>
+                        <div className="border border-success" style={{width: "110vh"}}>
+                            <input type="text" className="form control w-100 text-wrap" placeholder="Send a message..." aria-label="send-message"/>
                         </div>
 
                         {/* Send button */}
