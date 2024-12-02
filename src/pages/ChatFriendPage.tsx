@@ -2,6 +2,8 @@
 
 import NavBar from "../components/nav/NavBar"
 import SelectableChat from "../components/friend/SelectableChat"
+import LeftChatBubble from "../components/friend/LeftChatBubble"
+import RightChatBubble from "../components/friend/RightChatBubble"
 
 function ChatFriendPage () {
     return (
@@ -21,19 +23,17 @@ function ChatFriendPage () {
                 <div className="border border-danger w-75 d-flex flex-column" style={{maxWidth: "100%"}}>
 
                     {/* Text Bubbles */}
-                    <div className="border border-primary h-100 d-flex flex-column-reverse">
-                        {/* Left-Side Bubbles */}
+                    <div className="border border-primary h-100 d-flex flex-column-reverse overflow-y-auto" >
+                        {/* Bubbles */}
                         <div className="border border-danger d-flex flex-column" style={{width: "100%"}}>
-                            <div className= "border border-success mt-5">
-                                <div className="d-inline-flex bg-warning-subtle ms-3 p-1 rounded" style={{maxWidth: "65vh"}}>
-                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ducimus exercitationem deserunt fuga numquam officia sunt assumenda repellendus reprehenderit voluptate cum.
-                                </div>
-                            </div>
-                            <div className= "border border-danger d-flex align-items-end mt-5">
-                                <div className="borderd-inline-flex ms-auto bg-success-subtle me-3 p-1 rounded" style={{maxWidth: "65vh"}}>
-                                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui impedit architecto quod repudiandae? Ipsam, possimus recusandae eveniet provident repellendus tempore, necessitatibus doloremque nesciunt molestiae quo neque eaque laborum, ex labore porro at consequatur placeat quaerat blanditiis quasi voluptatem. Voluptate, laboriosam molestias! Rem, dignissimos saepe praesentium vel id ex ipsa voluptate.
-                                </div>
-                            </div>
+                            <LeftChatBubble/>
+                            <RightChatBubble/>
+                            <LeftChatBubble/>
+                            <RightChatBubble/>
+                            <LeftChatBubble/>
+                            <RightChatBubble/>
+                            <LeftChatBubble/>
+                            
                         </div>
                     </div>
 
