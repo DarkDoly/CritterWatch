@@ -1,0 +1,31 @@
+//Stylesheet for colors and fonts for the entire project
+@import 'https://fonts.googleapis.com/css2?family=Tomorrow:wght@400;700&display=swap';
+
+//Colors used for backgrounds and border
+
+$body-font-family: "Tomorrow", sans-serif;
+
+    
+//Colors used for text and buttons
+
+//These are used for fonts
+
+.primary-chatbox-cus{
+    color: #464443;
+    background-color: #f5ece5;
+}
+
+.primary-background-cus{
+    background-color: #ddf2d5;
+}
+
+.secondary-chatbox-cus{
+    color: rgb(44, 43, 43);
+    background-color: rgb(237, 235, 235);
+}
+
+.secondary-background-cus{
+    background-color: #4b734b;
+}
+
+@import "../node_modules/bootstrap/scss/bootstrap";

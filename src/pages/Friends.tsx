@@ -13,7 +13,7 @@ function Friends() {
   const [selectableFriends, setSelectableFriends] = useState<JSX.Element[]>([]);
 
   useEffect(() => {
-    const friends = userData?.friends_ID.map((userID: string) => {
+    const friends = userData?.friends_ID?.map((userID: string) => {
       return <SelectableChat userID={userID} key={userID} />;
     });
 
