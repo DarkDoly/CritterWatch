@@ -5,10 +5,11 @@ import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./ProtectedRoute";
 import CreatePost from "./pages/CreatePost";
 import Register from "./pages/Register";
-import ForgotPasswordPartA from "./pages/ForgotPasswordPartA";
-import ForgotPasswordPartB from "./pages/ForgotPasswordPartB";
 import Profile from "./pages/Profile";
-import ChatFriendPage from "./pages/ChatFriendPage";
+import EditProfile from "./pages/EditProfile";
+import Friends from "./pages/Friends";
+import SignOut from "./pages/SignOut";
+import Forgot from "./pages/Forgot";
 
 function App() {
   return (
@@ -39,10 +40,32 @@ function App() {
       />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/forgotPasswordTempA" element={<ForgotPasswordPartA />} />
-      <Route path="/forgotPasswordTempB" element={<ForgotPasswordPartB />} />
-      <Route path="/Profile" element={<Profile />} />
-      <Route path="/Friends" element ={<ChatFriendPage />} />
+      <Route
+        path="/user/:username"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/edit-profile"
+        element={
+          <ProtectedRoute>
+            <EditProfile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/friends"
+        element={
+          <ProtectedRoute>
+            <Friends />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/signout" element={<SignOut />} />
+      <Route path="/forgot" element={<Forgot />} />
     </Routes>
   );
 }

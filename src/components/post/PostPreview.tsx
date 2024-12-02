@@ -52,14 +52,22 @@ function PostPreview({
 
     setPostLikes(newLikes);
 
-    updateDoc(doc(db, "post", id), { likes: newLikes });
+    updateDoc(doc(db, "post", id), {
+      likes: newLikes,
+      likeCount: newLikes.length,
+    });
   };
 
   return (
     <div className="col-4">
       <div className="card my-4">
         <Link to={"/post/" + id}>
-          <img src={image} className="card-img-top" alt="" height={"300px"} />
+          <img
+            src={image}
+            className="card-img-top object-fit-cover"
+            alt=""
+            height={"300px"}
+          />
         </Link>
         <div className="card-body">
           <PostLikeButton
@@ -72,7 +80,7 @@ function PostPreview({
             likedHandler={handleLiked}
           />
           <Link
-            to={"/user/@" + username}
+            to={"/user/" + username}
             className="text-dark link-underline link-underline-opacity-0"
           >
             <p className="card-text fw-bold">@{username}</p>

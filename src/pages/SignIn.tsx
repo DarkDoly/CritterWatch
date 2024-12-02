@@ -20,6 +20,8 @@ function SignIn() {
       .catch((error) => {
         console.log("Failed to login");
         console.log(error.code, error.message);
+
+        alert("Invalid email or password!");
       });
   };
 

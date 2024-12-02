@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   DocumentData,
   getDocs,
@@ -98,7 +99,10 @@ function PostDetailed() {
 
     setPostLikes(newLikes);
 
-    updateDoc(doc(db, "post", id), { likes: newLikes });
+    updateDoc(doc(db, "post", id), {
+      likes: newLikes,
+      likeCount: newLikes.length,
+    });
   };
 
   const commentSection = comments.map((comment) => {
@@ -132,6 +136,14 @@ function PostDetailed() {
     setCommentInput("");
   };
 
+  const handleDelete = () => {
+    if (!id || !confirm("Are you sure you want to delete this post?")) return;
+
+    deleteDoc(doc(db, "post", id)).then(() => {
+      navigate("/");
+    });
+  };
+
   return (
     <>
       <NavBar />
@@ -161,7 +173,7 @@ function PostDetailed() {
 
           <div className="col">
             <Link
-              to={"/user/@" + username}
+              to={"/user/" + username}
               className="text-dark link-underline link-underline-opacity-0"
             >
               <p className="card-text fw-bold">@{username}</p>
@@ -174,10 +186,20 @@ function PostDetailed() {
             <div className="mt-4">
               <p>{postData?.content}</p>
             </div>
+
+            {postData?.userId == auth.currentUser?.uid && (
+              <button
+                type="button"
+                className="btn btn-link text-secondary px-0"
+                onClick={handleDelete}
+              >
+                Delete post
+              </button>
+            )}
           </div>
         </div>
 
-        <div>
+        <div className="mt-4">
           {commentSection}
           <div className="my-2">
             <textarea
