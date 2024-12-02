@@ -59,9 +59,20 @@ function CreatePostForm({ onSubmit }: CreatePostFormProps) {
         onClick={(e) => {
           e.preventDefault();
 
-          if (location.trim() === "") return;
-          if (!imageFiles) return;
-          if (description.trim() === "") return;
+          if (location.trim() === "") {
+            alert("Invalid location where you found the critter.");
+            return;
+          }
+
+          if (!imageFiles) {
+            alert("Please upload images for the post.");
+            return;
+          }
+
+          if (description.trim() === "") {
+            alert("Invalid description");
+            return;
+          }
 
           onSubmit(location, imageFiles, description);
         }}

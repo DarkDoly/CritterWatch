@@ -3,9 +3,9 @@ import NavBar from "../components/nav/NavBar";
 import PostGrid from "../components/post/PostGrid";
 
 function Home() {
-  const [sortBy, setSortBy] = useState("recentlyPosted");
-  const [time, setTime] = useState("allTime");
-  const [distance, setDistance] = useState("10miles");
+  const [sortBy, setSortBy] = useState("highestLiked");
+  const [time, setTime] = useState("pastWeek");
+  const [distance, setDistance] = useState("everywhere");
   const [currentLat, setCurrentLat] = useState(0);
   const [currentLon, setCurrentLon] = useState(0);
 
