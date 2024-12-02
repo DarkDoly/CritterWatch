@@ -106,7 +106,8 @@ signUpBtn.onclick = () => {
                     UserID: userCredential.user.uid,
                     UserName: username, // Save the username
                     UserEmail: email,   // Save the user email
-                    friends_ID: []    // Initialize with an empty array of tuples
+                    friends_ID: [],    // Initialize with an empty array of tuples
+                    pending_friends_ID: [] 
                 })
                 .then(() => {
                     console.log("User document created successfully.");
@@ -261,7 +262,7 @@ backFromFriendsSection.onclick = () => {
 
 
 
-// Function to add a friend
+// Function to add yourself to the friend's pending_friends_ID
 function addFriend(friendEmail) {
     const user = firebase.auth().currentUser;
     if (user) {
@@ -272,15 +273,55 @@ function addFriend(friendEmail) {
                     snapshot.forEach(doc => {
                         const friendId = doc.id; // Get the friend's ID
 
-                        // Update the user's document with the new friend's details
-                        db.collection('user').doc(user.uid).update({
-                            friends_ID: firebase.firestore.FieldValue.arrayUnion(friendId) // Add friend ID
-                        })
-                        .then(() => {
-                            getFriends(); // Refresh the friends list
-                        })
-                        .catch(error => {
-                            console.error("Error adding friend:", error);
+                        // Check if pending_friends_ID or friends_ID exists for the friend
+                        const userDocRef = db.collection('user').doc(user.uid);
+                        const friendDocRef = db.collection('user').doc(friendId);
+                        
+                        userDocRef.get().then(userDoc => {
+                            if (userDoc.exists) {
+                                const userData = userDoc.data();
+                                const pendingFriends = userData.pending_friends_ID || [];
+                                const friends = userData.friends_ID || [];
+
+                                // Check if the friend is already in your pending_friends_ID
+                                if (pendingFriends.includes(friendId)) {
+                                    alert("You have already sent a friend request to this person. Please respond to their friend request.");
+                                }
+                                // Check if the friend is already in your friends_ID
+                                else if (friends.includes(friendId)) {
+                                    alert("This person is already your friend.");
+                                } else {
+                                    // Check if the friend has your ID in their pending_friends_ID
+                                    friendDocRef.get().then(friendDoc => {
+                                        if (friendDoc.exists) {
+                                            const friendData = friendDoc.data();
+                                            const friendPending = friendData.pending_friends_ID || [];
+
+                                            // If your ID is in their pending list, notify the user
+                                            if (friendPending.includes(user.uid)) {
+                                                alert("This person has already sent you a friend request. Please wait for their response.");
+                                            } else {
+                                                // Add your ID to the friend's pending_friends_ID
+                                                friendDocRef.update({
+                                                    pending_friends_ID: firebase.firestore.FieldValue.arrayUnion(user.uid)
+                                                })
+                                                .then(() => {
+                                                    alert("Friend request sent to " + friendEmail);
+                                                })
+                                                .catch(error => {
+                                                    console.error("Error adding your ID to friend's pending list:", error);
+                                                    alert(error.message);
+                                                });
+                                            }
+                                        }
+                                    }).catch(error => {
+                                        console.error("Error retrieving friend's document:", error);
+                                        alert(error.message);
+                                    });
+                                }
+                            }
+                        }).catch(error => {
+                            console.error("Error retrieving user document:", error);
                             alert(error.message);
                         });
                     });
@@ -296,6 +337,80 @@ function addFriend(friendEmail) {
         alert("No user signed in.");
     }
 }
+
+
+// Function to handle adding the friend from the pending request
+document.getElementById("add").addEventListener("click", () => {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        const userDocRef = db.collection('user').doc(user.uid);
+        userDocRef.get().then(userDoc => {
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                const pendingFriends = userData.pending_friends_ID || [];
+
+                if (pendingFriends.length > 0) {
+                    const friendId = pendingFriends[0]; // Get the first pending friend ID
+
+                    // Fetch friend's document to get their details
+                    const friendDocRef = db.collection('user').doc(friendId);
+                    friendDocRef.get().then(friendDoc => {
+                        if (friendDoc.exists) {
+                            const friendData = friendDoc.data();
+                            const friendName = friendData.UserName;
+
+                            // Ask user if they want to add this person as a friend
+                            const confirmation = window.confirm(`Do you want to add ${friendName} as a friend?`);
+
+                            if (confirmation) {
+                                // Check if this friend is already in your friends list
+                                const userFriends = userData.friends_ID || [];
+                                const friendFriends = friendData.friends_ID || [];
+
+                                if (!userFriends.includes(friendId)) {
+                                    // Add friend to your friends list
+                                    userDocRef.update({
+                                        friends_ID: firebase.firestore.FieldValue.arrayUnion(friendId)
+                                    });
+                                }
+
+                                if (!friendFriends.includes(user.uid)) {
+                                    // Add your ID to the friend's friends list
+                                    friendDocRef.update({
+                                        friends_ID: firebase.firestore.FieldValue.arrayUnion(user.uid)
+                                    });
+                                }
+
+                                // Notify success
+                                alert(`You have successfully added ${friendName} as a friend!`);
+
+                                // Remove friend from pending_friends_ID for both users
+                                userDocRef.update({
+                                    pending_friends_ID: firebase.firestore.FieldValue.arrayRemove(friendId)
+                                });
+
+                                // Re-run the auth state change to reflect changes
+                                auth.onAuthStateChanged(() => {});
+                            }
+                        }
+                    }).catch(error => {
+                        console.error("Error fetching friend's document:", error);
+                        alert(error.message);
+                    });
+                } else {
+                    alert("No pending friend requests.");
+                }
+            }
+        }).catch(error => {
+            console.error("Error fetching user's document:", error);
+            alert(error.message);
+        });
+    } else {
+        alert("No user signed in.");
+    }
+});
+
+
 
 // Function to get friends list
 function getFriends() {
@@ -377,13 +492,24 @@ function removeFriend(friendId) {
         // Get the friend's document to retrieve their username
         db.collection('user').doc(friendId).get().then(doc => {
             if (doc.exists) {
-                // Update the user's document to remove the friend ID and name
+                // Update the user's document to remove the friend ID
                 db.collection('user').doc(user.uid).update({
                     friends_ID: firebase.firestore.FieldValue.arrayRemove(friendId)
                 })
                 .then(() => {
                     console.log("Friend removed:", friendId);
-                    getFriends(); // Refresh the friends list
+
+                    // Also remove the user's ID from the friend's friends_ID array
+                    db.collection('user').doc(friendId).update({
+                        friends_ID: firebase.firestore.FieldValue.arrayRemove(user.uid)
+                    })
+                    .then(() => {
+                        console.log("Your ID removed from friend's friends list:", user.uid);
+                        getFriends(); // Refresh the friends list
+                    })
+                    .catch(error => {
+                        console.error("Error removing your ID from friend's friends list:", error);
+                    });
                 })
                 .catch(error => {
                     console.error("Error removing friend:", error);
@@ -399,6 +525,7 @@ function removeFriend(friendId) {
         alert("No user signed in.");
     }
 }
+
 
 // Event listener for adding a friend
 document.getElementById('addFriendBtn').onclick = () => {
@@ -737,8 +864,31 @@ auth.onAuthStateChanged(user => {
         getPosts(); // Fetch and display posts if signed in
         whenSignedIn.hidden = false;
         signInSection.hidden = true; // Hide sign-in section
+
+        // Check if pending_friends_ID exists and is non-empty
+        const userDocRef = db.collection('user').doc(user.uid);
+        userDocRef.get().then(userDoc => {
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                const pendingFriends = userData.pending_friends_ID || [];
+
+                // If there are pending friend requests, show notification and unhide the "add" button
+                if (pendingFriends.length > 0) {
+                    alert("You have a friend request!");
+                    document.getElementById("add").hidden = false; // Unhide the "add" button
+                }
+                else {
+                    document.getElementById("add").hidden = true;
+                }
+            }
+        }).catch(error => {
+            console.error("Error retrieving user document:", error);
+            alert(error.message);
+        });
+
     } else {
         whenSignedIn.hidden = true;
         signInSection.hidden = false; // Show main sign-in section
     }
 });
+
