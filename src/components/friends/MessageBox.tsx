@@ -18,7 +18,9 @@ function MessageBox({ username }: MessageBoxProps) {
   const [selectedUser, setSelectedUser] = useState<DocumentData | undefined>();
   const [messageInput, setMessageInput] = useState("");
 
-  const handleSend = () => {};
+  const handleSend = () => {
+    if (messageInput.trim() == "") return;
+  };
 
   useEffect(() => {
     const q = query(
