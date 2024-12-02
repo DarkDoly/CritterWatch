@@ -66,9 +66,14 @@ const Profile = () => {
             <p className="mt-3">{userData?.Description}</p>
 
             {userData.UserID == auth.currentUser?.uid && (
-              <Link to={"/edit-profile"} className="text-secondary">
-                Edit Profile
-              </Link>
+              <div>
+                <Link to={"/edit-profile"} className="text-secondary me-2">
+                  Edit Profile
+                </Link>
+                <Link to={"/signout"} className="text-secondary">
+                  Sign Out
+                </Link>
+              </div>
             )}
           </div>
         </div>

@@ -34,7 +34,7 @@ function CreatePostForm({ onSubmit }: CreatePostFormProps) {
           type="file"
           className="form-control"
           id="imageInput"
-          accept="image/png, image/jpeg, image/jpg"
+          accept="image/png, image/jpeg, image/jpg, png, jpeg, jpg"
           multiple
           onChange={(e) => {
             setImageFiles(e.target.files);

@@ -57,7 +57,7 @@ function EditProfileForm({ onSubmit }: EditProfileFormProps) {
           type="file"
           className="form-control"
           id="imageInput"
-          accept="image/png, image/jpeg, image/jpg"
+          accept="image/png, image/jpeg, image/jpg, png, jpeg, jpg"
           onChange={(e) => {
             setImageFile(e.target.files);
           }}

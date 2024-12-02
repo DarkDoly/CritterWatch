@@ -32,24 +32,24 @@ function Home() {
     <>
       <NavBar />
       <div className="container">
-        <div>
+        <div className="input-group w-75">
           <select
-            className="form-select w-25 my-2"
+            className="form-select my-2"
             aria-label="Distance"
             onChange={handleDistanceMethod}
-            defaultValue={"10miles"}
+            defaultValue={"everywhere"}
           >
+            <option value="everywhere">Everywhere</option>
             <option value="5miles">Within 5 miles</option>
             <option value="10miles">Within 10 miles</option>
             <option value="50miles">Within 50 miles</option>
-            <option value="everywhere">Everywhere</option>
           </select>
 
           <select
-            className="form-select w-25 my-2"
+            className="form-select my-2"
             aria-label="Time"
             onChange={handleTimeMethod}
-            defaultValue={"allTime"}
+            defaultValue={"pastWeek"}
           >
             <option value="allTime">All Time</option>
             <option value="today">Today</option>
@@ -58,10 +58,10 @@ function Home() {
           </select>
 
           <select
-            className="form-select w-25 my-2"
+            className="form-select my-2"
             aria-label="Sort By"
             onChange={handleSortMethod}
-            defaultValue={"recentlyPosted"}
+            defaultValue={"highestLiked"}
           >
             <option value="recentlyPosted">Recently Posted</option>
             <option value="highestLiked">Most Liked</option>

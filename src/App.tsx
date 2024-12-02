@@ -10,6 +10,7 @@ import ForgotPasswordPartB from "./pages/ForgotPasswordPartB";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Friends from "./components/post/Friends";
+import SignOut from "./pages/SignOut";
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/signout" element={<SignOut />} />
     </Routes>
   );
 }
