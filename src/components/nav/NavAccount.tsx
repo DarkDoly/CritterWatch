@@ -1,11 +1,12 @@
 import { useContext } from "react";
 import { UserContext } from "../account/UserProvider";
 import { Link } from "react-router-dom";
+import { auth } from "../../Firebase";
 
 function NavAccount() {
   const { userData } = useContext(UserContext);
 
-  if (userData) {
+  if (userData && auth.currentUser) {
     return (
       <div>
         <Link to={"/friends"} className="text-dark">
