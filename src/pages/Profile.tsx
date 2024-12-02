@@ -47,46 +47,49 @@ const Profile = () => {
   return (
     <>
       <NavBar />
-
-      <div className="container">
-        <div className="card my-3">
-          <div className="card-body">
-            <div>
-              {userData?.UserImage && (
-                <img
-                  src={userData.UserImage}
-                  height={"45px"}
-                  width={"45px"}
-                  className="rounded-circle me-2 object-fit-cover"
-                  alt=""
-                />
-              )}
-              {"@" + userData?.UserName}
-            </div>
-            <p className="mt-3">{userData?.Description}</p>
-
-            {userData.UserID == auth.currentUser?.uid && (
-              <div>
-                <Link to={"/edit-profile"} className="text-secondary me-2">
-                  Edit Profile
-                </Link>
-                <Link to={"/signout"} className="text-secondary">
-                  Sign Out
-                </Link>
+      <div className="">
+        <div className="container primary-background-cus pt-1">
+          <div className="card my-3">
+            <div className="card-body secondary-chatbox-cus">
+              <div className="secondary-chatbox-cus">
+                {userData?.UserImage && (
+                  <img
+                    src={userData.UserImage}
+                    height={"100px"}
+                    width={"100px"}
+                    className="rounded-circle me-2 object-fit-cover"
+                    alt=""
+                  />
+                )}
+                <div className="mt-3">
+                  {"@" + userData?.UserName}
+                </div>
               </div>
-            )}
-          </div>
-        </div>
+              <p className="mt-3 p-1 d-inline-flex primary-chatbox-cus rounded">{userData?.Description}</p>
 
-        <PostGrid
-          sortBy={"recentlyPosted"}
-          time={"allTime"}
-          distance={"everywhere"}
-          currentLat={0}
-          currentLon={0}
-          user={userData?.UserID}
-          key={userData?.UserID}
-        />
+              {userData.UserID == auth.currentUser?.uid && (
+                <div>
+                  <Link to={"/edit-profile"} className="secondary-chatbox-cus me-2">
+                    Edit Profile
+                  </Link>
+                  <Link to={"/signout"} className="secondary-chatbox-cus">
+                    Sign Out
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <PostGrid
+            sortBy={"recentlyPosted"}
+            time={"allTime"}
+            distance={"everywhere"}
+            currentLat={0}
+            currentLon={0}
+            user={userData?.UserID}
+            key={userData?.UserID}
+          />
+        </div>
       </div>
     </>
   );

@@ -19,7 +19,7 @@ function PostReply({ replyData }: PostReplyProps) {
   }, []);
 
   return (
-    <div className="my-4 ms-5">
+    <div className="my-4 ms-5 p-2 rounded secondary-chatbox-cus">
       <Link
         to={"/user/" + username}
         className="text-dark link-underline link-underline-opacity-0"

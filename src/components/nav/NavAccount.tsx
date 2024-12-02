@@ -10,12 +10,12 @@ function NavAccount() {
     return (
       <div>
         <Link to={"/friends"} className="text-dark">
-          <button type="button" className="btn btn-dark">
+          <button type="button" className="btn" style= {{ backgroundColor: "#f5ece5", color: "#464443" }}>
             Friends
           </button>
         </Link>
         <Link to={"/create"}>
-          <button type="button" className="btn btn-dark mx-3">
+          <button type="button" className="btn mx-3" style= {{ backgroundColor: "#f5ece5", color: "#464443" }}>
             Create Post
           </button>
         </Link>
@@ -40,7 +40,7 @@ function NavAccount() {
 
   return (
     <Link to={"/register"}>
-      <button type="button" className="btn btn-dark">
+      <button type="button" className="btn" style= {{ backgroundColor: "#f5ece5", color: "#464443" }}>
         Register
       </button>
     </Link>

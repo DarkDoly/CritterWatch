@@ -225,7 +225,8 @@ function PostGrid({
       <div className="col-12 text-center my-4">
         <button
           type="button"
-          className="btn btn-dark"
+          className="btn"
+          style= {{ backgroundColor: "#f5ece5", color: "#464443" }}
           onClick={loadMoreHandler}
         >
           Load More

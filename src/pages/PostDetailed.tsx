@@ -214,7 +214,8 @@ function PostDetailed() {
           </div>
           <button
             type="button"
-            className="btn btn-dark mb-4 mt-2"
+            className="btn mb-4 mt-2"
+            style= {{ backgroundColor: "#f5ece5", color: "#464443" }}
             onClick={handleComment}
           >
             <i className="bi bi-chat-left"></i> Comment

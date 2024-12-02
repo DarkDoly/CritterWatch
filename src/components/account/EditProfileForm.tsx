@@ -65,7 +65,8 @@ function EditProfileForm({ onSubmit }: EditProfileFormProps) {
       </div>
       <button
         type="submit"
-        className="btn btn-dark w-100"
+        className="btn w-100"
+        style= {{ backgroundColor: "#f5ece5", color: "#464443" }}
         onClick={(e) => {
           e.preventDefault();
 

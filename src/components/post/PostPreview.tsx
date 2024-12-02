@@ -59,7 +59,7 @@ function PostPreview({
   };
 
   return (
-    <div className="col-4">
+    <div className="col-4 primary-background-cus">
       <div className="card my-4">
         <Link to={"/post/" + id}>
           <img
@@ -69,7 +69,7 @@ function PostPreview({
             height={"300px"}
           />
         </Link>
-        <div className="card-body">
+        <div className="card-body primary-chatbox-cus">
           <PostLikeButton
             likedByUser={
               auth.currentUser

@@ -102,7 +102,7 @@ function PostComment({ commentData }: PostCommentProps) {
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 p-2 primary-background-cus rounded">
       <Link
         to={"/user/" + username}
         className="text-dark link-underline link-underline-opacity-0"
