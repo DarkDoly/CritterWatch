@@ -45,10 +45,11 @@ an email and password, which then after they would have access to other Critter 
 - Website is hosted on firebase and can be accessed by this link
 
 ### Running Locally on your machine
-1. Install VSCode
-2. NPM Install on the command line for dependencies
-3. NPM install Vite to run the dev server
-4. NPM run dev to access the dev server
+1. Install node.js if haven't already
+3. Install VScode on your computer
+4. Type "npm install" on the command line
+5. Type "npm install vite" on the command line
+6. Type "npm run dev" on the command line
 
 ## Video Demonstration
 link to video demonstation
