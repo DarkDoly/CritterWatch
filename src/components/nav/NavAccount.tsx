@@ -8,6 +8,11 @@ function NavAccount() {
   if (userData) {
     return (
       <div>
+        <Link to={"/friends"} className="text-dark">
+          <button type="button" className="btn btn-dark">
+            Friends
+          </button>
+        </Link>
         <Link to={"/create"}>
           <button type="button" className="btn btn-dark mx-3">
             Create Post

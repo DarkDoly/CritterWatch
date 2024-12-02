@@ -9,6 +9,7 @@ import ForgotPasswordPartA from "./pages/ForgotPasswordPartA";
 import ForgotPasswordPartB from "./pages/ForgotPasswordPartB";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
+import Friends from "./components/post/Friends";
 
 function App() {
   return (
@@ -54,6 +55,14 @@ function App() {
         element={
           <ProtectedRoute>
             <EditProfile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/friends"
+        element={
+          <ProtectedRoute>
+            <Friends />
           </ProtectedRoute>
         }
       />
