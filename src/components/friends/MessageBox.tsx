@@ -1,25 +1,44 @@
 import {
   collection,
+  doc,
   DocumentData,
   getDocs,
   limit,
   query,
+  setDoc,
+  Timestamp,
   where,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { db } from "../../Firebase";
 import { Link } from "react-router-dom";
+import { UserContext } from "../account/UserProvider";
+import MessageList from "./MessageList";
 
 interface MessageBoxProps {
   username: string;
 }
 
 function MessageBox({ username }: MessageBoxProps) {
+  const { userData } = useContext(UserContext);
+
   const [selectedUser, setSelectedUser] = useState<DocumentData | undefined>();
   const [messageInput, setMessageInput] = useState("");
 
   const handleSend = () => {
     if (messageInput.trim() == "") return;
+
+    setDoc(
+      doc(
+        collection(db, "user/" + userData?.UserID + "/" + selectedUser?.UserID)
+      ),
+      {
+        createdAt: Timestamp.now(),
+        content: messageInput,
+      }
+    );
+
+    setMessageInput("");
   };
 
   useEffect(() => {
@@ -53,7 +72,11 @@ function MessageBox({ username }: MessageBoxProps) {
       </Link>
 
       <div>
-        <p></p>
+        <MessageList
+          fromID={userData?.UserID}
+          toID={selectedUser?.UserID}
+          key={userData?.UserID + selectedUser?.UserID}
+        />
       </div>
 
       <div className="my-2">
