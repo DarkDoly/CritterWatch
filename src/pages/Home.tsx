@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NavBar from "../components/nav/NavBar";
 import PostGrid from "../components/post/PostGrid";
 
@@ -6,6 +6,15 @@ function Home() {
   const [sortBy, setSortBy] = useState("recentlyPosted");
   const [time, setTime] = useState("allTime");
   const [distance, setDistance] = useState("10miles");
+  const [currentLat, setCurrentLat] = useState(0);
+  const [currentLon, setCurrentLon] = useState(0);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      setCurrentLat(position.coords.latitude);
+      setCurrentLon(position.coords.longitude);
+    });
+  }, []);
 
   const handleSortMethod = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.currentTarget.value);
@@ -62,9 +71,11 @@ function Home() {
         </div>
 
         <PostGrid
-          key={sortBy + time + distance}
+          key={sortBy + time + distance + currentLat + currentLon}
           sortBy={sortBy}
           time={time}
+          currentLat={currentLat}
+          currentLon={currentLon}
           distance={distance}
         />
       </div>

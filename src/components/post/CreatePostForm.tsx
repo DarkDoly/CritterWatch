@@ -17,7 +17,7 @@ function CreatePostForm({ onSubmit }: CreatePostFormProps) {
     <form>
       <div className="my-3">
         <label htmlFor="locationInput" className="form-label">
-          Location
+          Where did you find this critter?
         </label>
         <input
           type="text"

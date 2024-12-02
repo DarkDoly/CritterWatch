@@ -16,24 +16,24 @@ interface PostGridProps {
   sortBy: String;
   time: String;
   distance: String;
+  currentLat: number;
+  currentLon: number;
   user?: String;
 }
 
-function PostGrid({ sortBy, time, distance, user }: PostGridProps) {
+function PostGrid({
+  sortBy,
+  time,
+  distance,
+  currentLat,
+  currentLon,
+  user,
+}: PostGridProps) {
   const [posts, setPosts] = useState<DocumentData[]>([]);
   const [pagination, setPagination] = useState(1);
   const [lastPostFetched, setLastPostFetched] = useState<
     DocumentData | undefined
   >(undefined);
-  const [currentLat, setCurrentLat] = useState(0);
-  const [currentLon, setCurrentLon] = useState(0);
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      setCurrentLat(position.coords.latitude);
-      setCurrentLon(position.coords.longitude);
-    });
-  }, []);
 
   const loadMoreHandler = () => {
     setPagination(pagination + 1);
@@ -94,67 +94,67 @@ function PostGrid({ sortBy, time, distance, user }: PostGridProps) {
     const lonPerMile = 0.0181818181818182;
 
     if (distance == "5miles") {
-      let distanceMethodLatLower = where(
+      distanceMethodLatLower = where(
         "coordinates.latitude",
         ">",
-        currentLat - latPerMile * 5
+        currentLat - latPerMile * 5.0
       );
-      let distanceMethodLatUpper = where(
+      distanceMethodLatUpper = where(
         "coordinates.latitude",
         "<",
-        currentLat + latPerMile * 5
+        currentLat + latPerMile * 5.0
       );
-      let distanceMethodLonLower = where(
+      distanceMethodLonLower = where(
         "coordinates.longitude",
         ">",
-        currentLon - lonPerMile * 5
+        currentLon - lonPerMile * 5.0
       );
-      let distanceMethodLonUpper = where(
+      distanceMethodLonUpper = where(
         "coordinates.longitude",
         "<",
-        currentLon + lonPerMile * 5
+        currentLon + lonPerMile * 5.0
       );
     } else if (distance == "10miles") {
-      let distanceMethodLatLower = where(
+      distanceMethodLatLower = where(
         "coordinates.latitude",
         ">",
-        currentLat - latPerMile * 10
+        currentLat - latPerMile * 10.0
       );
-      let distanceMethodLatUpper = where(
+      distanceMethodLatUpper = where(
         "coordinates.latitude",
         "<",
-        currentLat + latPerMile * 10
+        currentLat + latPerMile * 10.0
       );
-      let distanceMethodLonLower = where(
+      distanceMethodLonLower = where(
         "coordinates.longitude",
         ">",
-        currentLon - lonPerMile * 10
+        currentLon - lonPerMile * 10.0
       );
-      let distanceMethodLonUpper = where(
+      distanceMethodLonUpper = where(
         "coordinates.longitude",
         "<",
-        currentLon + lonPerMile * 10
+        currentLon + lonPerMile * 10.0
       );
     } else if (distance == "50miles") {
-      let distanceMethodLatLower = where(
+      distanceMethodLatLower = where(
         "coordinates.latitude",
         ">",
-        currentLat - latPerMile * 50
+        currentLat - latPerMile * 50.0
       );
-      let distanceMethodLatUpper = where(
+      distanceMethodLatUpper = where(
         "coordinates.latitude",
         "<",
-        currentLat + latPerMile * 50
+        currentLat + latPerMile * 50.0
       );
-      let distanceMethodLonLower = where(
+      distanceMethodLonLower = where(
         "coordinates.longitude",
         ">",
-        currentLon - lonPerMile * 50
+        currentLon - lonPerMile * 50.0
       );
-      let distanceMethodLonUpper = where(
+      distanceMethodLonUpper = where(
         "coordinates.longitude",
         "<",
-        currentLon + lonPerMile * 50
+        currentLon + lonPerMile * 50.0
       );
     }
 
@@ -162,12 +162,12 @@ function PostGrid({ sortBy, time, distance, user }: PostGridProps) {
       q = query(
         postsRef,
         limit(9),
-        userMethod,
-        timeMethod,
         distanceMethodLatLower,
         distanceMethodLatUpper,
         distanceMethodLonLower,
         distanceMethodLonUpper,
+        userMethod,
+        timeMethod,
         sortMethod,
         startAfter(lastPostFetched)
       );
@@ -175,12 +175,12 @@ function PostGrid({ sortBy, time, distance, user }: PostGridProps) {
       q = query(
         postsRef,
         limit(9),
-        userMethod,
-        timeMethod,
         distanceMethodLatLower,
         distanceMethodLatUpper,
         distanceMethodLonLower,
         distanceMethodLonUpper,
+        userMethod,
+        timeMethod,
         sortMethod
       );
     }

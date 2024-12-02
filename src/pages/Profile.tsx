@@ -77,6 +77,8 @@ const Profile = () => {
           sortBy={"recentlyPosted"}
           time={"allTime"}
           distance={"everywhere"}
+          currentLat={0}
+          currentLon={0}
           user={userData?.UserID}
           key={userData?.UserID}
         />
