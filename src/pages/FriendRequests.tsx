@@ -17,6 +17,11 @@ function FriendRequests() {
         const newPending = userData?.pending_friends_ID.filter(
           (e: string) => e !== userID
         );
+
+        if (!userData.friends_ID) {
+          userData.friends_ID = [];
+        }
+
         userData.friends_ID.push(userID);
 
         updateDoc(doc(db, "user", userData.UserID), {
