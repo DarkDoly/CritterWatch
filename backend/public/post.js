@@ -78,16 +78,10 @@ postImage.addEventListener('change', (event) => {
 postForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const title = document.getElementById('postTitle').value.trim();
     const content = document.getElementById('postContent').value;
     const relativeLocation = locationInput.value.trim();
     const createPostButton = postForm.querySelector('button[type="submit"]');
     const files = postImage.files;
-    
-    if (!title || files.length === 0) {
-        alert("Please enter a title and select at least one image.");
-        return;
-    }
 
     createPostButton.disabled = true;
     const user = firebase.auth().currentUser;
@@ -114,7 +108,6 @@ postForm.addEventListener('submit', async (event) => {
 
         // Save the post data with an array of image URLs
         await db.collection('post').add({
-            title: title,
             content: content,
             imageUrls: imageUrls, // Store the array of image URLs
             likes: [],
