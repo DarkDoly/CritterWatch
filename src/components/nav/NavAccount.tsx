@@ -13,7 +13,10 @@ function NavAccount() {
             Create Post
           </button>
         </Link>
-        <Link to={"/user/" + userData?.UserName} className="text-dark">
+        <Link
+          to={"/user/" + userData?.UserName}
+          className="text-dark text-decoration-none"
+        >
           {userData.UserImage && (
             <img
               src={userData.UserImage}

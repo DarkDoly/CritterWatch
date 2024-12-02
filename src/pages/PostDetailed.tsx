@@ -180,7 +180,7 @@ function PostDetailed() {
           </div>
         </div>
 
-        <div>
+        <div className="mt-4">
           {commentSection}
           <div className="my-2">
             <textarea
