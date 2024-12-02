@@ -86,10 +86,23 @@ function RegisterForm({ onSubmit }: RegisterFormProps) {
         onClick={(e) => {
           e.preventDefault();
 
-          if (email.trim() === "") return;
-          if (username.trim() === "") return;
+          if (email.trim() === "") {
+            alert("Invalid email.");
+            return;
+          }
+
+          if (username.trim() === "") {
+            alert("Invalid username.");
+            return;
+          }
+
           if (password.trim() === "") return;
-          if (password.trim() !== confirmPassword.trim()) return;
+
+          if (password.trim() !== confirmPassword.trim()) {
+            alert("Passwords do not match.");
+
+            return;
+          }
 
           onSubmit(email, username, imageFile, password);
         }}

@@ -8,9 +8,15 @@ function Forgot() {
   const navigate = useNavigate();
 
   const handleForgot = (email: string) => {
-    sendPasswordResetEmail(auth, email).then(() => {
-      navigate("/signin");
-    });
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        alert("Check your email for a link to reset your password.");
+
+        navigate("/signin");
+      })
+      .catch(() => {
+        alert("Invalid email.");
+      });
   };
 
   return (
