@@ -14,7 +14,7 @@ function Friends() {
 
   useEffect(() => {
     const friends = userData?.friends_ID.map((userID: string) => {
-      return <SelectableChat userID={userID} />;
+      return <SelectableChat userID={userID} key={userID} />;
     });
 
     setSelectableFriends(friends);
@@ -35,7 +35,9 @@ function Friends() {
           <div className="col-4">{selectableFriends}</div>
 
           <div className="col-8">
-            {params.username && <MessageBox username={params.username} />}
+            {params.username && (
+              <MessageBox username={params.username} key={params.username} />
+            )}
           </div>
         </div>
       </div>

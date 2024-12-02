@@ -214,7 +214,7 @@ function PostDetailed() {
           </div>
           <button
             type="button"
-            className="btn btn-dark mb-4 mt-2"
+            className="btn btn-dark mb-4 mt-1"
             onClick={handleComment}
           >
             <i className="bi bi-chat-left"></i> Comment

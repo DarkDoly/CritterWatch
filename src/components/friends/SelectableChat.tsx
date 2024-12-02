@@ -21,7 +21,6 @@ function SelectableChat({ userID }: SelectableChatProps) {
       <Link
         to={"/friends/" + userData?.UserName}
         className="text-decoration-none"
-        key={userData?.UserID}
       >
         <div className="card">
           <div className="card-body">

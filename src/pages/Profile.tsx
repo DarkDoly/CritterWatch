@@ -49,6 +49,22 @@ const Profile = () => {
     });
   };
 
+  const handleRemoveFriend = () => {
+    if (!userData || !currentUserData) return;
+
+    if (!userData.friends_ID) {
+      userData.friends_ID = [];
+    }
+
+    userData.friends_ID = userData.friends_ID.filter(
+      (e: string) => e != currentUserData.UserID
+    );
+
+    updateDoc(doc(db, "user", userData.UserID), {
+      friends_ID: userData.friends_ID,
+    });
+  };
+
   useEffect(() => {
     let q = query(
       collection(db, "user"),
@@ -111,6 +127,13 @@ const Profile = () => {
               !userData?.friends_ID?.includes(currentUserData.UserID) && (
                 <button className="btn btn-dark" onClick={handleAddFriend}>
                   Add Friend
+                </button>
+              )}
+
+            {currentUserData.UserID != auth.currentUser?.uid &&
+              userData?.friends_ID?.includes(currentUserData.UserID) && (
+                <button className="btn btn-dark" onClick={handleRemoveFriend}>
+                  Remove Friend
                 </button>
               )}
           </div>
