@@ -7,7 +7,7 @@ import CreatePost from "./pages/CreatePost";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
-import Friends from "./components/post/Friends";
+import Friends from "./pages/Friends";
 import SignOut from "./pages/SignOut";
 import Forgot from "./pages/Forgot";
 
