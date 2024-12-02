@@ -14,10 +14,11 @@ import { db } from "../../Firebase";
 
 interface PostGridProps {
   sortBy: String;
+  time: String;
   user?: String;
 }
 
-function PostGrid({ sortBy, user }: PostGridProps) {
+function PostGrid({ sortBy, time, user }: PostGridProps) {
   const [posts, setPosts] = useState<DocumentData[]>([]);
   const [pagination, setPagination] = useState(1);
   const [lastPostFetched, setLastPostFetched] = useState<
@@ -39,6 +40,8 @@ function PostGrid({ sortBy, user }: PostGridProps) {
 
     let userMethod = where("userId", "!=", "-1");
 
+    let timeMethod = where("createdAt", ">=", new Date(0));
+
     if (sortBy == "recentlyPosted") {
       sortMethod = orderBy("createdAt", "desc");
     } else if (sortBy == "oldestPosted") {
@@ -53,16 +56,36 @@ function PostGrid({ sortBy, user }: PostGridProps) {
       userMethod = where("userId", "==", user);
     }
 
+    if (time == "allTime") {
+      timeMethod = where("createdAt", ">=", new Date(0));
+    } else if (time == "today") {
+      const date = new Date();
+      date.setTime(date.getTime() - 24 * 60 * 60 * 1000);
+
+      timeMethod = where("createdAt", ">=", date);
+    } else if (time == "pastWeek") {
+      const date = new Date();
+      date.setTime(date.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      timeMethod = where("createdAt", ">=", date);
+    } else if (time == "pastMonth") {
+      const date = new Date();
+      date.setTime(date.getTime() - 31 * 24 * 60 * 60 * 1000);
+
+      timeMethod = where("createdAt", ">=", date);
+    }
+
     if (lastPostFetched) {
       q = query(
         postsRef,
         sortMethod,
         startAfter(lastPostFetched),
         limit(9),
-        userMethod
+        userMethod,
+        timeMethod
       );
     } else {
-      q = query(postsRef, sortMethod, limit(9), userMethod);
+      q = query(postsRef, sortMethod, limit(9), userMethod, timeMethod);
     }
 
     getDocs(q).then((snapshot) => {
