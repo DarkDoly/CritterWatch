@@ -20,8 +20,8 @@ function Register() {
   ) => {
     setFormLoading(true);
 
-    createUserWithEmailAndPassword(auth, email, password).then(
-      async (userCredential) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
         const user = userCredential.user;
 
         let imageUrl;
@@ -41,8 +41,12 @@ function Register() {
         }).then(() => {
           navigate("/");
         });
-      }
-    );
+      })
+      .catch((error) => {
+        alert("Unable to create new account: " + error.message);
+
+        setFormLoading(false);
+      });
   };
 
   return (

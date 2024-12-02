@@ -21,7 +21,7 @@ function PostReply({ replyData }: PostReplyProps) {
   return (
     <div className="my-4 ms-5">
       <Link
-        to={"/user/@" + username}
+        to={"/user/" + username}
         className="text-dark link-underline link-underline-opacity-0"
       >
         {profileUrl && (

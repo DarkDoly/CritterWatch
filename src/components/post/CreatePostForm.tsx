@@ -17,7 +17,7 @@ function CreatePostForm({ onSubmit }: CreatePostFormProps) {
     <form>
       <div className="my-3">
         <label htmlFor="locationInput" className="form-label">
-          Location
+          Where did you find this critter?
         </label>
         <input
           type="text"
@@ -34,7 +34,7 @@ function CreatePostForm({ onSubmit }: CreatePostFormProps) {
           type="file"
           className="form-control"
           id="imageInput"
-          accept="image/png, image/jpeg, image/jpg"
+          accept="image/png, image/jpeg, image/jpg, png, jpeg, jpg"
           multiple
           onChange={(e) => {
             setImageFiles(e.target.files);
@@ -59,9 +59,20 @@ function CreatePostForm({ onSubmit }: CreatePostFormProps) {
         onClick={(e) => {
           e.preventDefault();
 
-          if (location.trim() === "") return;
-          if (!imageFiles) return;
-          if (description.trim() === "") return;
+          if (location.trim() === "") {
+            alert("Invalid location where you found the critter.");
+            return;
+          }
+
+          if (!imageFiles) {
+            alert("Please upload images for the post.");
+            return;
+          }
+
+          if (description.trim() === "") {
+            alert("Invalid description");
+            return;
+          }
 
           onSubmit(location, imageFiles, description);
         }}

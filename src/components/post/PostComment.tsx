@@ -104,7 +104,7 @@ function PostComment({ commentData }: PostCommentProps) {
   return (
     <div className="mb-4">
       <Link
-        to={"/user/@" + username}
+        to={"/user/" + username}
         className="text-dark link-underline link-underline-opacity-0"
       >
         {profileUrl && (
@@ -112,7 +112,7 @@ function PostComment({ commentData }: PostCommentProps) {
             src={profileUrl}
             height={"50px"}
             width={"50px"}
-            className="rounded-circle me-2"
+            className="rounded-circle me-2 object-fit-cover"
             alt=""
           />
         )}

@@ -18,7 +18,7 @@ function CreatePost() {
   ) => {
     setFormLoading(true);
 
-    const imageUrls = [];
+    const imageUrls: String[] = [];
 
     for (const file of imageFiles) {
       const storageRef = ref(storage, "images/" + file.name);
@@ -28,16 +28,32 @@ function CreatePost() {
       imageUrls.push(downloadUrl);
     }
 
-    addDoc(collection(db, "post"), {
-      content: description,
-      createdAt: Timestamp.now(),
-      imageUrls: imageUrls,
-      likes: [],
-      relativeLocation: location,
-      userId: auth.currentUser?.uid,
-    }).then((doc) => {
-      navigate("/post/" + doc.id);
-    });
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        addDoc(collection(db, "post"), {
+          content: description,
+          createdAt: Timestamp.now(),
+          imageUrls: imageUrls,
+          likes: [],
+          relativeLocation: location,
+          userId: auth.currentUser?.uid,
+          coordinates: {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          },
+        }).then((doc) => {
+          navigate("/post/" + doc.id);
+        });
+      },
+      (error) => {
+        alert(
+          "Location permissions must be enabled to create post: " +
+            error.message
+        );
+
+        navigate("/");
+      }
+    );
   };
 
   return (
