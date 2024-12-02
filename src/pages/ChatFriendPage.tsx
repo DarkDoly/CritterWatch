@@ -10,22 +10,22 @@ function ChatFriendPage () {
         <>
             <NavBar/>
             {/* Majority of the screen, left and right side */}
-            <div className="border border-primary d-flex flex-row" style={{height: "94vh"}}>
+            <div className="d-flex flex-row" style={{height: "94vh", backgroundColor:"#ddf2d5"}}>
 
                 {/* Left-side Friends */}
-                <div className="border border-secondary h-auto w-25">
+                <div className="h-auto w-25">
                     <SelectableChat/>
                     <SelectableChat/>
                     <SelectableChat/>
                 </div>
 
                 {/* Right side chat feature */}
-                <div className="border border-danger w-75 d-flex flex-column" style={{maxWidth: "100%"}}>
+                <div className="w-75 d-flex flex-column" style={{maxWidth: "100%", backgroundColor:"#e8f4e8"}}>
 
                     {/* Text Bubbles */}
-                    <div className="border border-primary h-100 d-flex flex-column-reverse overflow-y-auto" >
+                    <div className="h-100 d-flex flex-column-reverse overflow-y-auto" >
                         {/* Bubbles */}
-                        <div className="border border-danger d-flex flex-column" style={{width: "100%"}}>
+                        <div className="d-flex flex-column" style={{width: "100%"}}>
                             <LeftChatBubble/>
                             <RightChatBubble/>
                             <LeftChatBubble/>
@@ -38,15 +38,15 @@ function ChatFriendPage () {
                     </div>
 
                     {/* Chat Input Section */}
-                    <div className="border border-info d-flex flex-row justify-content-between mx-5">
+                    <div className="d-flex flex-row justify-content-between mx-5">
 
                         {/* Input area */}
-                        <div className="border border-success" style={{width: "110vh"}}>
+                        <div className="mt-1" style={{width: "110vh"}}>
                             <input type="text" className="form control w-100 text-wrap" placeholder="Send a message..." aria-label="send-message"/>
                         </div>
 
                         {/* Send button */}
-                        <div className="border border-danger align-self-center">
+                        <div className="align-self-center mb-2">
                             <button className="btn btn-secondary">Send</button>
                         </div>
                     </div>
