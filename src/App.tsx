@@ -10,6 +10,7 @@ import EditProfile from "./pages/EditProfile";
 import Friends from "./pages/Friends";
 import SignOut from "./pages/SignOut";
 import Forgot from "./pages/Forgot";
+import FriendRequests from "./pages/FriendRequests";
 
 function App() {
   return (
@@ -61,6 +62,22 @@ function App() {
         element={
           <ProtectedRoute>
             <Friends />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/friends/:username"
+        element={
+          <ProtectedRoute>
+            <Friends />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/requests"
+        element={
+          <ProtectedRoute>
+            <FriendRequests />
           </ProtectedRoute>
         }
       />

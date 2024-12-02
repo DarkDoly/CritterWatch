@@ -12,6 +12,11 @@ function NavAccount() {
         <Link to={"/friends"} className="text-dark">
           <button type="button" className="btn btn-dark">
             Friends
+            {userData?.pending_friends_ID.length > 0 && (
+              <span className="badge text-bg-danger ms-2">
+                {userData?.pending_friends_ID.length}
+              </span>
+            )}
           </button>
         </Link>
         <Link to={"/create"}>

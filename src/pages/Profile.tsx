@@ -1,22 +1,53 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import NavBar from "../components/nav/NavBar";
 import PostGrid from "../components/post/PostGrid";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   collection,
+  doc,
   DocumentData,
   getDocs,
   limit,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { auth, db } from "../Firebase";
+import { UserContext } from "../components/account/UserProvider";
 
 const Profile = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const [userData, setUserData] = useState<DocumentData | undefined>();
+  const { userData } = useContext(UserContext);
+
+  const [currentUserData, setCurrentUserData] = useState<
+    DocumentData | undefined
+  >();
+
+  const handleAddFriend = () => {
+    if (!userData || !currentUserData) return;
+
+    if (!userData.friends_ID) {
+      userData.friends_ID = [];
+    }
+
+    userData.friends_ID.push(currentUserData.UserID);
+
+    updateDoc(doc(db, "user", userData.UserID), {
+      friends_ID: userData.friends_ID,
+    });
+
+    if (!currentUserData.pending_friends_ID) {
+      currentUserData.pending_friends_ID = [];
+    }
+
+    currentUserData.pending_friends_ID.push(userData.UserID);
+
+    updateDoc(doc(db, "user", currentUserData.UserID), {
+      pending_friends_ID: currentUserData.pending_friends_ID,
+    });
+  };
 
   useEffect(() => {
     let q = query(
@@ -29,7 +60,7 @@ const Profile = () => {
       let found = false;
 
       snapshot.forEach((doc) => {
-        setUserData(doc.data());
+        setCurrentUserData(doc.data());
 
         found = true;
       });
@@ -40,7 +71,7 @@ const Profile = () => {
     });
   }, [params]);
 
-  if (!userData) {
+  if (!currentUserData) {
     return <p>Loading...</p>;
   }
 
@@ -52,20 +83,20 @@ const Profile = () => {
         <div className="card my-3">
           <div className="card-body">
             <div>
-              {userData?.UserImage && (
+              {currentUserData?.UserImage && (
                 <img
-                  src={userData.UserImage}
+                  src={currentUserData.UserImage}
                   height={"45px"}
                   width={"45px"}
                   className="rounded-circle me-2 object-fit-cover"
                   alt=""
                 />
               )}
-              {"@" + userData?.UserName}
+              {"@" + currentUserData?.UserName}
             </div>
-            <p className="mt-3">{userData?.Description}</p>
+            <p className="mt-3">{currentUserData?.Description}</p>
 
-            {userData.UserID == auth.currentUser?.uid && (
+            {currentUserData.UserID == auth.currentUser?.uid && (
               <div>
                 <Link to={"/edit-profile"} className="text-secondary me-2">
                   Edit Profile
@@ -75,6 +106,13 @@ const Profile = () => {
                 </Link>
               </div>
             )}
+
+            {currentUserData.UserID != auth.currentUser?.uid &&
+              !userData?.friends_ID?.includes(currentUserData.UserID) && (
+                <button className="btn btn-dark" onClick={handleAddFriend}>
+                  Add Friend
+                </button>
+              )}
           </div>
         </div>
 
@@ -84,8 +122,8 @@ const Profile = () => {
           distance={"everywhere"}
           currentLat={0}
           currentLon={0}
-          user={userData?.UserID}
-          key={userData?.UserID}
+          user={currentUserData?.UserID}
+          key={currentUserData?.UserID}
         />
       </div>
     </>

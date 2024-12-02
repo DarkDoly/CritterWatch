@@ -1,16 +1,43 @@
-function SelectableChat() {
+import { doc, DocumentData, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { db } from "../../Firebase";
+
+interface SelectableChatProps {
+  userID: string;
+}
+
+function SelectableChat({ userID }: SelectableChatProps) {
+  const [userData, setUserData] = useState<DocumentData | undefined>();
+
+  useEffect(() => {
+    getDoc(doc(db, "user", userID)).then((doc) => {
+      setUserData(doc.data());
+    });
+  }, []);
+
   return (
-    <div className="card">
-      <div className="card-body">
-        <div>
-          <img src="" alt="" />
-          @Username
+    <div className="my-3">
+      <Link
+        to={"/friends/" + userData?.UserName}
+        className="text-decoration-none"
+        key={userData?.UserID}
+      >
+        <div className="card">
+          <div className="card-body">
+            <div>
+              <img
+                src={userData?.UserImage}
+                height={"50px"}
+                width={"50px"}
+                className="rounded-circle me-2 object-fit-cover"
+                alt=""
+              />
+              {"@" + userData?.UserName}
+            </div>
+          </div>
         </div>
-        <p>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ex vero
-          maiores...
-        </p>
-      </div>
+      </Link>
     </div>
   );
 }
