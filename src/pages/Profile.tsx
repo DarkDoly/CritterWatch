@@ -76,6 +76,7 @@ const Profile = () => {
         <PostGrid
           sortBy={"recentlyPosted"}
           time={"allTime"}
+          distance={"everywhere"}
           user={userData?.UserID}
           key={userData?.UserID}
         />
