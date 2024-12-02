@@ -59,7 +59,7 @@ function MessageBox({ username }: MessageBoxProps) {
     <div>
       <Link
         to={"/user/" + selectedUser?.UserName}
-        className="text-decoration-none text-dark"
+        className="text-decoration-none text-dark "
       >
         <img
           src={selectedUser?.UserImage}
@@ -79,7 +79,7 @@ function MessageBox({ username }: MessageBoxProps) {
         />
       </div>
 
-      <div className="my-2">
+      <div className="my-2 ">
         <textarea
           className="form-control"
           id="messageInput"
@@ -92,7 +92,8 @@ function MessageBox({ username }: MessageBoxProps) {
       </div>
       <button
         type="button"
-        className="btn btn-dark mb-4 mt-1"
+        className="btn mb-4 mt-1"
+        style= {{color: "#464443", backgroundColor: "#f5ece5"}}
         onClick={handleSend}
       >
         Send

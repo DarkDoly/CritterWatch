@@ -102,10 +102,10 @@ function PostComment({ commentData }: PostCommentProps) {
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 primary-chatbox-cus rounded p-1">
       <Link
         to={"/user/" + username}
-        className="text-dark link-underline link-underline-opacity-0"
+        className="text-dark link-underline link-underline-opacity-0 "
       >
         {profileUrl && (
           <img
@@ -118,7 +118,7 @@ function PostComment({ commentData }: PostCommentProps) {
         )}
         <span className="card-text fw-bold">@{username}</span>
       </Link>
-      <p className="text-secondary">
+      <p className="text-secondary ">
         {commentData.createdAt.toDate().toLocaleString()}
       </p>
       <p className="mb-2">{commentData.content}</p>
@@ -126,7 +126,7 @@ function PostComment({ commentData }: PostCommentProps) {
         <div>
           <div className="my-2">
             <textarea
-              className="form-control"
+              className="form-control "
               id="replyInput"
               rows={3}
               value={replyInput}

@@ -3,8 +3,8 @@ import NavAccount from "./NavAccount";
 
 function NavBar() {
   return (
-    <nav className="navbar bg-body-tertiary">
-      <div className="container">
+    <nav className="navbar secondary-chatbox-cus">
+      <div className="container primary-chatbox-cus rounded">
         <Link to={"/"} className="navbar-brand">
           <img
             src="/critter-watch-logo.png"

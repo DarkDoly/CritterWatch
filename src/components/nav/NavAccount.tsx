@@ -9,8 +9,8 @@ function NavAccount() {
   if (userData && auth.currentUser) {
     return (
       <div>
-        <Link to={"/friends"} className="text-dark">
-          <button type="button" className="btn btn-dark">
+        <Link to={"/friends"} className="text-dark" style= {{color: "#464443", backgroundColor: "#f5ece5"}}>
+          <button type="button" className="btn">
             Friends
             {userData?.pending_friends_ID.length > 0 && (
               <span className="badge text-bg-danger ms-2">
@@ -20,7 +20,7 @@ function NavAccount() {
           </button>
         </Link>
         <Link to={"/create"}>
-          <button type="button" className="btn btn-dark mx-3">
+          <button type="button" className="btn mx-3" style= {{color: "#464443", backgroundColor: "#f5ece5"}}>
             Create Post
           </button>
         </Link>
@@ -45,7 +45,7 @@ function NavAccount() {
 
   return (
     <Link to={"/register"}>
-      <button type="button" className="btn btn-dark">
+      <button type="button" className="btn" style= {{color: "#464443", backgroundColor: "#f5ece5"}}>
         Register
       </button>
     </Link>

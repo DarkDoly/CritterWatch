@@ -35,7 +35,7 @@ function SignIn() {
           <div className="col-4">
             <div className="card my-5">
               <div className="card-body">
-                <h5 className="card-title">Sign In</h5>
+                <h5 className="card-title" >Sign In</h5>
                 <SignInForm onSubmit={handleSignIn} />
               </div>
             </div>

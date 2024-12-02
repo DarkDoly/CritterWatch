@@ -22,8 +22,8 @@ function SelectableChat({ userID }: SelectableChatProps) {
         to={"/friends/" + userData?.UserName}
         className="text-decoration-none"
       >
-        <div className="card">
-          <div className="card-body">
+        <div className="card ">
+          <div className="card-body primary-chatbox-cus">
             <div>
               <img
                 src={userData?.UserImage}
