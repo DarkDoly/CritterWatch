@@ -26,17 +26,21 @@ function PostImageCarousel({ imageUrls }: PostImageCarouselProps) {
   return (
     <div className="my-2">
       <img src={imageUrls[currentImage]} className="card-img-top" alt="" />
-      <div className="text-center">
-        <button className="btn me-2" onClick={showPrevious}>
-          Previous
-        </button>
-        <span>
-          {currentImage + 1} | {imageUrls.length}
-        </span>
-        <button className="btn ms-2" onClick={showNext}>
-          Next
-        </button>
-      </div>
+      {imageUrls.length > 1 && (
+        <>
+          <div className="text-center">
+            <button className="btn me-2" onClick={showPrevious}>
+              Previous
+            </button>
+            <span>
+              {currentImage + 1} | {imageUrls.length}
+            </span>
+            <button className="btn ms-2" onClick={showNext}>
+              Next
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

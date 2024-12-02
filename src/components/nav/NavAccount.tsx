@@ -13,8 +13,17 @@ function NavAccount() {
             Create Post
           </button>
         </Link>
-        <Link to={"/user/@" + userData?.UserName} className="text-dark">
-          {userData?.UserEmail}
+        <Link to={"/user/" + userData?.UserName} className="text-dark">
+          {userData.UserImage && (
+            <img
+              src={userData.UserImage}
+              height={"45px"}
+              width={"45px"}
+              className="rounded-circle me-2 object-fit-cover"
+              alt=""
+            />
+          )}
+          {"@" + userData?.UserName}
         </Link>
       </div>
     );

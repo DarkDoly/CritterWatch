@@ -52,7 +52,10 @@ function PostPreview({
 
     setPostLikes(newLikes);
 
-    updateDoc(doc(db, "post", id), { likes: newLikes });
+    updateDoc(doc(db, "post", id), {
+      likes: newLikes,
+      likeCount: newLikes.length,
+    });
   };
 
   return (
@@ -77,7 +80,7 @@ function PostPreview({
             likedHandler={handleLiked}
           />
           <Link
-            to={"/user/@" + username}
+            to={"/user/" + username}
             className="text-dark link-underline link-underline-opacity-0"
           >
             <p className="card-text fw-bold">@{username}</p>

@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import ForgotPasswordPartA from "./pages/ForgotPasswordPartA";
 import ForgotPasswordPartB from "./pages/ForgotPasswordPartB";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 
 function App() {
   return (
@@ -40,7 +41,22 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/forgotPasswordTempA" element={<ForgotPasswordPartA />} />
       <Route path="/forgotPasswordTempB" element={<ForgotPasswordPartB />} />
-      <Route path="/profile" element={<Profile />} />
+      <Route
+        path="/user/:username"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/edit-profile"
+        element={
+          <ProtectedRoute>
+            <EditProfile />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

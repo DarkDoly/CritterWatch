@@ -8,10 +8,16 @@ import {
   orderBy,
   query,
   startAfter,
+  where,
 } from "firebase/firestore";
 import { db } from "../../Firebase";
 
-function PostGrid() {
+interface PostGridProps {
+  sortBy: String;
+  user?: String;
+}
+
+function PostGrid({ sortBy, user }: PostGridProps) {
   const [posts, setPosts] = useState<DocumentData[]>([]);
   const [pagination, setPagination] = useState(1);
   const [lastPostFetched, setLastPostFetched] = useState<
@@ -29,15 +35,34 @@ function PostGrid() {
 
     let q;
 
+    let sortMethod = orderBy("createdAt", "desc");
+
+    let userMethod = where("userId", "!=", "-1");
+
+    if (sortBy == "recentlyPosted") {
+      sortMethod = orderBy("createdAt", "desc");
+    } else if (sortBy == "oldestPosted") {
+      sortMethod = orderBy("createdAt");
+    } else if (sortBy == "highestLiked") {
+      sortMethod = orderBy("likeCount", "desc");
+    } else if (sortBy == "leastLiked") {
+      sortMethod = orderBy("likeCount");
+    }
+
+    if (user) {
+      userMethod = where("userId", "==", user);
+    }
+
     if (lastPostFetched) {
       q = query(
         postsRef,
-        orderBy("createdAt", "desc"),
+        sortMethod,
         startAfter(lastPostFetched),
-        limit(9)
+        limit(9),
+        userMethod
       );
     } else {
-      q = query(postsRef, orderBy("createdAt", "desc"), limit(9));
+      q = query(postsRef, sortMethod, limit(9), userMethod);
     }
 
     getDocs(q).then((snapshot) => {
