@@ -7,6 +7,7 @@ interface ProtectedRouteProps {
   children: JSX.Element;
 }
 
+// Checks to see if user is authenticated before displaying content.
 function ProtectedRoute({ children }: ProtectedRouteProps) {
   const navigate = useNavigate();
   const location = useLocation();
