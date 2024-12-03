@@ -62,4 +62,4 @@ an email and password, which then after they would have access to other Critter 
 
 ## Video Demonstration
 
-link to video demonstation
+https://github.com/DarkDoly/CritterWatch/blob/main/CritterWatchDemo.mp4
