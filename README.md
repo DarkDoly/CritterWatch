@@ -57,10 +57,8 @@ an email and password, which then after they would have access to other Critter 
 ### Running Locally on your machine
 
 1. Install node.js if haven't already
-2. Install VScode on your computer
-3. Type "npm install" on the command line
-4. Type "npm install vite" on the command line
-5. Type "npm run dev" on the command line
+2. Type "npm install" on the command line
+3. Type "npm run dev" on the command line to start the dev server
 
 ## Video Demonstration
 
