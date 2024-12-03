@@ -63,6 +63,19 @@ const Profile = () => {
     updateDoc(doc(db, "user", userData.UserID), {
       friends_ID: userData.friends_ID,
     });
+
+    if (!currentUserData.pending_friends_ID) {
+      currentUserData.pending_friends_ID = [];
+    }
+
+    currentUserData.pending_friends_ID =
+      currentUserData.pending_friends_ID.filter(
+        (e: string) => e != userData.UserID
+      );
+
+    updateDoc(doc(db, "user", currentUserData.UserID), {
+      pending_friends_ID: currentUserData.pending_friends_ID,
+    });
   };
 
   useEffect(() => {
@@ -109,10 +122,12 @@ const Profile = () => {
                 />
               )}
               <div className="primary-chatbox-cus d-inline-flex rounded p-1">
-              {"@" + currentUserData?.UserName}
+                {"@" + currentUserData?.UserName}
               </div>
             </div>
-            <p className="mt-3 primary-chatbox-cus p-1 rounded">{currentUserData?.Description}</p>
+            <p className="mt-3 primary-chatbox-cus p-1 rounded">
+              {currentUserData?.Description}
+            </p>
 
             {currentUserData.UserID == auth.currentUser?.uid && (
               <div>
@@ -127,14 +142,22 @@ const Profile = () => {
 
             {currentUserData.UserID != auth.currentUser?.uid &&
               !userData?.friends_ID?.includes(currentUserData.UserID) && (
-                <button className="btn" style= {{color: "#464443", backgroundColor: "#f5ece5"}} onClick={handleAddFriend}>
+                <button
+                  className="btn"
+                  style={{ color: "#464443", backgroundColor: "#f5ece5" }}
+                  onClick={handleAddFriend}
+                >
                   Add Friend
                 </button>
               )}
 
             {currentUserData.UserID != auth.currentUser?.uid &&
               userData?.friends_ID?.includes(currentUserData.UserID) && (
-                <button className="btn" style= {{color: "#464443", backgroundColor: "#f5ece5"}} onClick={handleRemoveFriend}>
+                <button
+                  className="btn"
+                  style={{ color: "#464443", backgroundColor: "#f5ece5" }}
+                  onClick={handleRemoveFriend}
+                >
                   Remove Friend
                 </button>
               )}
