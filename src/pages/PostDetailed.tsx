@@ -147,7 +147,7 @@ function PostDetailed() {
   return (
     <>
       <NavBar />
-      <div className="container my-3">
+      <div className="container my-3 secondary-background-cus">
         <Link
           to={"/"}
           className="text-dark link-underline link-underline-opacity-0"
@@ -155,8 +155,8 @@ function PostDetailed() {
           <i className="bi bi-arrow-left"></i> Return
         </Link>
 
-        <div className="row mt-4">
-          <div className="col mx-3">
+        <div className="row mt-4 ">
+          <div className="col mx-3 ">
             <PostLikeButton
               likedByUser={
                 auth.currentUser
@@ -171,12 +171,12 @@ function PostDetailed() {
             />
           </div>
 
-          <div className="col">
+          <div className="col ">
             <Link
               to={"/user/" + username}
-              className="text-dark link-underline link-underline-opacity-0"
+              className="text-dark link-underline link-underline-opacity-0 "
             >
-              <p className="card-text fw-bold">@{username}</p>
+              <p className="card-text fw-bold ">@{username}</p>
             </Link>
             <p className="text-secondary">{postData?.relativeLocation}</p>
             <p className="text-secondary">
@@ -214,7 +214,8 @@ function PostDetailed() {
           </div>
           <button
             type="button"
-            className="btn btn-dark mb-4 mt-1"
+            className="btn mb-4 mt-1"
+            style= {{color: "#464443", backgroundColor: "#f5ece5"}}
             onClick={handleComment}
           >
             <i className="bi bi-chat-left"></i> Comment

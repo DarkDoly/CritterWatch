@@ -55,7 +55,8 @@ function CreatePostForm({ onSubmit }: CreatePostFormProps) {
       </div>
       <button
         type="submit"
-        className="btn btn-dark w-100"
+        className="btn w-100"
+        style= {{color: "#464443", backgroundColor: "#f5ece5"}}
         onClick={(e) => {
           e.preventDefault();
 

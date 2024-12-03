@@ -31,8 +31,8 @@ function Home() {
   return (
     <>
       <NavBar />
-      <div className="container">
-        <div className="input-group w-75">
+      <div className="container ">
+        <div className="input-group w-75 ">
           <select
             className="form-select my-2"
             aria-label="Distance"
@@ -69,7 +69,7 @@ function Home() {
             <option value="oldestPosted">Oldest Posted</option>
           </select>
         </div>
-
+        <div className=" p-3 rounded secondary-background-cus">
         <PostGrid
           key={sortBy + time + distance + currentLat + currentLon}
           sortBy={sortBy}
@@ -78,6 +78,7 @@ function Home() {
           currentLon={currentLon}
           distance={distance}
         />
+        </div>
       </div>
     </>
   );

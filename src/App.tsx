@@ -14,6 +14,7 @@ import FriendRequests from "./pages/FriendRequests";
 
 function App() {
   return (
+    <div className="primary-background-cus h-100" style={{minHeight: "100vh"}}>
     <Routes>
       <Route
         path="/"
@@ -84,6 +85,7 @@ function App() {
       <Route path="/signout" element={<SignOut />} />
       <Route path="/forgot" element={<Forgot />} />
     </Routes>
+    </div>
   );
 }
 

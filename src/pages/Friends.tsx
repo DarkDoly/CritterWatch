@@ -24,17 +24,17 @@ function Friends() {
     <>
       <NavBar />
 
-      <div className="container">
+      <div className="container ">
         <div className="row my-3">
-          <Link to={"/requests"} className="my-2 text-dark">
+          <Link to={"/requests"} className="my-2 text-dark ">
             Friend Requests:{" "}
             {userData?.pending_friends_ID
               ? userData?.pending_friends_ID.length
               : 0}
           </Link>
-          <div className="col-4">{selectableFriends}</div>
+          <div className="col-4 ">{selectableFriends}</div>
 
-          <div className="col-8">
+          <div className="col-8 secondary-background-cus">
             {params.username && (
               <MessageBox username={params.username} key={params.username} />
             )}

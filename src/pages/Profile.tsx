@@ -95,22 +95,24 @@ const Profile = () => {
     <>
       <NavBar />
 
-      <div className="container">
-        <div className="card my-3">
-          <div className="card-body">
+      <div className="container secondary-background-cus pt-2">
+        <div className="card my-3 primary-chatbox-cus">
+          <div className="card-body secondary-chatbox-cus">
             <div>
               {currentUserData?.UserImage && (
                 <img
                   src={currentUserData.UserImage}
-                  height={"45px"}
-                  width={"45px"}
+                  height={"100px"}
+                  width={"100px"}
                   className="rounded-circle me-2 object-fit-cover"
                   alt=""
                 />
               )}
+              <div className="primary-chatbox-cus d-inline-flex rounded p-1">
               {"@" + currentUserData?.UserName}
+              </div>
             </div>
-            <p className="mt-3">{currentUserData?.Description}</p>
+            <p className="mt-3 primary-chatbox-cus p-1 rounded">{currentUserData?.Description}</p>
 
             {currentUserData.UserID == auth.currentUser?.uid && (
               <div>
@@ -125,14 +127,14 @@ const Profile = () => {
 
             {currentUserData.UserID != auth.currentUser?.uid &&
               !userData?.friends_ID?.includes(currentUserData.UserID) && (
-                <button className="btn btn-dark" onClick={handleAddFriend}>
+                <button className="btn" style= {{color: "#464443", backgroundColor: "#f5ece5"}} onClick={handleAddFriend}>
                   Add Friend
                 </button>
               )}
 
             {currentUserData.UserID != auth.currentUser?.uid &&
               userData?.friends_ID?.includes(currentUserData.UserID) && (
-                <button className="btn btn-dark" onClick={handleRemoveFriend}>
+                <button className="btn" style= {{color: "#464443", backgroundColor: "#f5ece5"}} onClick={handleRemoveFriend}>
                   Remove Friend
                 </button>
               )}
