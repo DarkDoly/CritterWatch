@@ -57,19 +57,21 @@ function MessageBox({ username }: MessageBoxProps) {
 
   return (
     <div>
-      <Link
-        to={"/user/" + selectedUser?.UserName}
-        className="text-decoration-none text-dark "
-      >
-        <img
-          src={selectedUser?.UserImage}
-          height={"50px"}
-          width={"50px"}
-          className="rounded-circle me-2 object-fit-cover"
-          alt=""
-        />
-        {"@" + username}
-      </Link>
+      <div className="my-3">
+        <Link
+          to={"/user/" + selectedUser?.UserName}
+          className="text-decoration-none text-dark"
+        >
+          <img
+            src={selectedUser?.UserImage}
+            height={"50px"}
+            width={"50px"}
+            className="rounded-circle me-2 object-fit-cover"
+            alt=""
+          />
+          {"@" + username}
+        </Link>
+      </div>
 
       <div>
         <MessageList
@@ -93,7 +95,7 @@ function MessageBox({ username }: MessageBoxProps) {
       <button
         type="button"
         className="btn mb-4 mt-1"
-        style= {{color: "#464443", backgroundColor: "#f5ece5"}}
+        style={{ color: "#464443", backgroundColor: "#f5ece5" }}
         onClick={handleSend}
       >
         Send
