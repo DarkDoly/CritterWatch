@@ -52,7 +52,7 @@ an email and password, which then after they would have access to other Critter 
 
 ### Running on Firebase
 
-- Website is hosted on firebase and can be accessed by this link
+- Website is hosted on firebase and can be accessed by this link: https://critter-watch-7d415.web.app/
 
 ### Running Locally on your machine
 
